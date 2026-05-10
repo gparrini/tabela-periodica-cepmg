@@ -1,0 +1,2159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tabela Periódica — Cidade Ocidental</title>
+<style>
+/* ============================================================
+   RESET & VARIÁVEIS
+============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #080d18;
+  --surface:   #0f1623;
+  --surface2:  #16202f;
+  --surface3:  #1c2a3d;
+  --border:    #1e2d44;
+  --border2:   #263852;
+  --text:      #e2e8f0;
+  --text-dim:  #64748b;
+  --text-muted:#94a3b8;
+  --accent:    #38bdf8;
+  --accent2:   #818cf8;
+  --gold:      #f59e0b;
+
+  --c-alkali:        #ef4444;
+  --c-alkaline:      #f97316;
+  --c-lanthanide:    #a855f7;
+  --c-actinide:      #ec4899;
+  --c-transition:    #3b82f6;
+  --c-post:          #14b8a6;
+  --c-metalloid:     #84cc16;
+  --c-nonmetal:      #22c55e;
+  --c-halogen:       #eab308;
+  --c-noble:         #06b6d4;
+
+  --radius: 6px;
+  --ease: 0.18s ease;
+}
+
+/* ============================================================
+   BASE
+============================================================ */
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(56,189,248,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(56,189,248,.025) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ============================================================
+   HEADER
+============================================================ */
+header {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 2.5rem 1rem 1.5rem;
+}
+
+.header-eyebrow {
+  font-size: .7rem;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: .6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .4rem;
+}
+.header-eyebrow svg { flex-shrink: 0; }
+
+header h1 {
+  font-size: clamp(1.6rem, 4vw, 3rem);
+  font-weight: 900;
+  letter-spacing: -1.5px;
+  background: linear-gradient(135deg, #e2e8f0 30%, var(--accent) 70%, var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.1;
+  margin-bottom: .5rem;
+}
+
+header .subtitle {
+  color: var(--text-dim);
+  font-size: .9rem;
+  max-width: 500px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* ============================================================
+   TABS
+============================================================ */
+.tabs-bar {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  background: rgba(8,13,24,.95);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 .5rem;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tabs-bar::-webkit-scrollbar { display: none; }
+
+.tab-btn {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  padding: .85rem 1rem;
+  font-size: .82rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: color var(--ease), border-color var(--ease);
+  position: relative;
+  top: 1px;
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+}
+.tab-btn svg { flex-shrink: 0; }
+.tab-btn:hover { color: var(--text-muted); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* ============================================================
+   TAB PANELS
+============================================================ */
+.tab-panel { display: none; position: relative; z-index: 1; }
+.tab-panel.active { display: block; }
+
+/* ============================================================
+   CONTROLS
+============================================================ */
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .65rem;
+  justify-content: center;
+  padding: 1rem 1rem .6rem;
+}
+
+.controls input,
+.controls select {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: .5rem 1rem;
+  border-radius: 999px;
+  font-size: .82rem;
+  outline: none;
+  transition: border-color var(--ease), box-shadow var(--ease);
+}
+.controls input { min-width: 200px; }
+.controls input:focus,
+.controls select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(56,189,248,.12);
+}
+.controls select option { background: var(--surface); }
+
+.filter-co-label {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  font-size: .78rem;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: .4rem .8rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+.filter-co-label input { accent-color: var(--gold); }
+.filter-co-label .co-icon { color: var(--gold); display: flex; align-items: center; }
+
+/* ============================================================
+   LEGENDA
+============================================================ */
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .45rem;
+  justify-content: center;
+  padding: .5rem 1rem .8rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: .3rem;
+  font-size: .7rem;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: .22rem .5rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  transition: border-color var(--ease), background var(--ease);
+}
+.legend-item:hover { background: var(--surface2); border-color: var(--border); }
+.legend-item.active-filter { background: var(--surface2); }
+
+.legend-dot {
+  width: 9px; height: 9px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   TABELA PERIÓDICA
+============================================================ */
+.table-wrapper {
+  overflow-x: auto;
+  padding: .4rem 1rem 1.5rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+.periodic-table {
+  display: grid;
+  grid-template-columns: repeat(18, minmax(52px, 1fr));
+  gap: 3px;
+  min-width: 960px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ============================================================
+   BLOCO DE ELEMENTO
+============================================================ */
+.element {
+  position: relative;
+  padding: 4px 3px 5px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: transform .15s ease, box-shadow .15s ease, opacity .2s ease, border-color .15s;
+  user-select: none;
+  min-height: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+}
+
+.element::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: currentColor;
+  opacity: .12;
+  border-radius: inherit;
+  transition: opacity .15s;
+}
+
+.element.has-co::after {
+  content: '';
+  position: absolute;
+  top: 2px; right: 3px;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 4px var(--gold);
+  opacity: .9;
+}
+
+.element:hover {
+  transform: scale(1.18) translateZ(0);
+  z-index: 10;
+  border-color: currentColor;
+  box-shadow: 0 0 18px 2px currentColor;
+}
+.element:hover::before { opacity: .26; }
+
+.element.dimmed { opacity: .15; pointer-events: none; }
+.element.highlighted {
+  transform: scale(1.08);
+  border-color: currentColor;
+  box-shadow: 0 0 10px 1px currentColor;
+  z-index: 5;
+}
+
+.el-number { font-size: .52rem; color: rgba(255,255,255,.5); line-height: 1; align-self: flex-start; margin-left: 3px; }
+.el-symbol { font-size: 1.15rem; font-weight: 700; line-height: 1.1; color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,.5); }
+.el-name   { font-size: .45rem; color: rgba(255,255,255,.62); line-height: 1.1; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; }
+.el-mass   { font-size: .42rem; color: rgba(255,255,255,.4); }
+
+/* ============================================================
+   CORES POR CATEGORIA
+============================================================ */
+.alkali          { color: var(--c-alkali);     }
+.alkaline        { color: var(--c-alkaline);   }
+.lanthanide      { color: var(--c-lanthanide); }
+.actinide        { color: var(--c-actinide);   }
+.transition      { color: var(--c-transition); }
+.post-transition { color: var(--c-post);       }
+.metalloid       { color: var(--c-metalloid);  }
+.nonmetal        { color: var(--c-nonmetal);   }
+.halogen         { color: var(--c-halogen);    }
+.noble           { color: var(--c-noble);      }
+
+/* ============================================================
+   SEPARADORES Lan / Act
+============================================================ */
+.separator-row { grid-column: 1 / -1; height: 6px; }
+.lan-label, .act-label {
+  display: flex; align-items: center; justify-content: center;
+  font-size: .52rem; color: var(--text-dim);
+  border-radius: var(--radius);
+  border: 1px dashed var(--border);
+  min-height: 60px;
+}
+
+/* ============================================================
+   MODAL
+============================================================ */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.8);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+  display: flex; align-items: center; justify-content: center;
+  padding: 1rem;
+  opacity: 0; pointer-events: none;
+  transition: opacity .22s ease;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+
+.modal {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 18px;
+  width: 100%; max-width: 540px;
+  overflow: hidden;
+  transform: scale(.9) translateY(24px);
+  transition: transform .24s ease;
+  box-shadow: 0 40px 100px rgba(0,0,0,.7);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.modal-overlay.open .modal { transform: scale(1) translateY(0); }
+
+.modal-header {
+  padding: 1.2rem 1.4rem;
+  display: flex; align-items: center; gap: 1.2rem;
+  position: relative;
+}
+.modal-header::after {
+  content: ''; position: absolute; inset: 0;
+  background: currentColor; opacity: .07;
+}
+
+.modal-big-symbol {
+  font-size: 3.2rem; font-weight: 900; line-height: 1;
+  color: #fff; text-shadow: 0 2px 16px rgba(0,0,0,.5);
+  position: relative; z-index: 1;
+}
+.modal-title-block { position: relative; z-index: 1; }
+.modal-title-block h2 { font-size: 1.4rem; font-weight: 800; color: #fff; line-height: 1; }
+.modal-title-block .modal-number { font-size: .78rem; color: rgba(255,255,255,.55); margin-top: .25rem; }
+
+.modal-close {
+  position: absolute; top: 1rem; right: 1rem;
+  background: rgba(255,255,255,.1); border: none; color: #fff;
+  width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
+  font-size: .95rem; display: flex; align-items: center; justify-content: center;
+  z-index: 2; transition: background var(--ease);
+}
+.modal-close:hover { background: rgba(255,255,255,.2); }
+
+.modal-body { padding: 1rem 1.2rem 1.4rem; }
+
+.modal-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: .65rem; margin-bottom: .9rem;
+}
+.modal-field {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; padding: .6rem .85rem;
+}
+.modal-field label {
+  display: block; font-size: .62rem;
+  text-transform: uppercase; letter-spacing: .08em;
+  color: var(--text-dim); margin-bottom: .18rem;
+}
+.modal-field span { font-size: .9rem; font-weight: 600; color: var(--text); }
+.modal-field.full { grid-column: 1 / -1; }
+
+.modal-curiosity {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 10px; padding: .8rem 1rem;
+  font-size: .8rem; line-height: 1.6; color: var(--text-dim);
+  border-left: 3px solid currentColor; margin-bottom: .9rem;
+  display: flex; align-items: flex-start; gap: .5rem;
+}
+.modal-curiosity svg { flex-shrink: 0; margin-top: .1rem; }
+
+/* ============================================================
+   CONEXÃO CIDADE OCIDENTAL NO MODAL
+============================================================ */
+.co-section {
+  background: var(--surface3);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 1rem 1.1rem;
+  position: relative;
+  overflow: hidden;
+}
+.co-section::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(245,158,11,.06) 0%, transparent 60%);
+  pointer-events: none;
+}
+.co-header {
+  display: flex; align-items: center; gap: .5rem;
+  margin-bottom: .6rem;
+}
+.co-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--gold); flex-shrink: 0;
+  box-shadow: 0 0 6px var(--gold);
+}
+.co-title {
+  font-size: .65rem; text-transform: uppercase;
+  letter-spacing: .1em; color: var(--gold); font-weight: 600;
+}
+.co-place {
+  font-size: .95rem; font-weight: 700; color: var(--text);
+  margin-bottom: .4rem; line-height: 1.3;
+  display: flex; align-items: center; gap: .4rem;
+}
+.co-place svg { flex-shrink: 0; color: var(--gold); }
+.co-desc {
+  font-size: .8rem; line-height: 1.65; color: var(--text-dim);
+}
+.co-tags {
+  display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .6rem;
+}
+.co-tag {
+  font-size: .66rem; padding: .2rem .55rem;
+  border-radius: 99px;
+  background: rgba(245,158,11,.1);
+  border: 1px solid rgba(245,158,11,.2);
+  color: #fcd34d;
+}
+.no-co {
+  font-size: .78rem; color: var(--text-dim);
+  font-style: italic; text-align: center;
+  padding: .4rem 0;
+}
+
+.cat-badge {
+  display: inline-block; padding: .22rem .65rem;
+  border-radius: 999px; font-size: .7rem; font-weight: 700;
+  letter-spacing: .04em;
+}
+
+/* ============================================================
+   SCROLLBAR
+============================================================ */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* ============================================================
+   ABA CIDADE OCIDENTAL
+============================================================ */
+.co-page { padding: 1.5rem 1rem 3rem; max-width: 1100px; margin: 0 auto; }
+
+.co-page-header { text-align: center; margin-bottom: 2rem; }
+.co-page-header h2 {
+  font-size: clamp(1.3rem, 3vw, 2rem);
+  font-weight: 800; letter-spacing: -0.5px;
+  background: linear-gradient(135deg, var(--gold), #fde68a);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; margin-bottom: .4rem;
+}
+.co-page-header p { font-size: .85rem; color: var(--text-dim); max-width: 540px; margin: 0 auto; line-height: 1.6; }
+
+.co-place-section { margin-bottom: 2.5rem; }
+.co-place-title {
+  display: flex; align-items: center; gap: .7rem;
+  margin-bottom: 1rem; padding-bottom: .7rem;
+  border-bottom: 1px solid var(--border);
+}
+.co-place-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: rgba(245,158,11,.12);
+  border: 1px solid rgba(245,158,11,.25);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--gold); flex-shrink: 0;
+}
+.co-place-title h3 { font-size: 1rem; font-weight: 700; color: var(--text); line-height: 1.2; }
+.co-place-title p  { font-size: .72rem; color: var(--text-dim); margin-top: .15rem; line-height: 1.4; }
+
+.elements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(300px,100%), 1fr));
+  gap: .75rem;
+}
+
+.co-el-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: .9rem 1rem;
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: .85rem;
+  align-items: start;
+  cursor: pointer;
+  transition: border-color var(--ease), transform var(--ease), box-shadow var(--ease);
+}
+.co-el-card:hover {
+  border-color: var(--border2);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0,0,0,.4);
+}
+
+.mini-block {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; border-radius: 9px;
+  padding: 7px 4px; min-height: 56px;
+}
+.mini-num  { font-size: .5rem; color: rgba(255,255,255,.55); line-height: 1; align-self: flex-start; width: 100%; padding-left: 3px; }
+.mini-sym  { font-size: 1.3rem; font-weight: 700; color: #fff; line-height: 1.1; }
+.mini-name { font-size: .48rem; color: rgba(255,255,255,.65); line-height: 1.2; text-align: center; }
+.mini-mass { font-size: .42rem; color: rgba(255,255,255,.4); }
+
+.card-info-name  { font-size: .88rem; font-weight: 600; color: var(--text); margin-bottom: .3rem; line-height: 1.3; }
+.card-info-reason{ font-size: .75rem; color: var(--text-dim); line-height: 1.55; }
+.card-tags { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .5rem; }
+.card-tag {
+  font-size: .62rem; padding: .15rem .5rem;
+  border-radius: 99px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+}
+
+/* ============================================================
+   FOOTER
+============================================================ */
+footer {
+  text-align: center; padding: 1.5rem 1rem;
+  color: var(--text-dim); font-size: .72rem;
+  border-top: 1px solid var(--border); position: relative; z-index: 1;
+  line-height: 1.8;
+}
+footer a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color var(--ease);
+}
+footer a:hover { color: var(--accent2); }
+
+/* ============================================================
+   ABA ESTUDOS & FLASHCARDS
+============================================================ */
+.estudos-page {
+  padding: 1.5rem 1rem 3rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.estudos-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+.estudos-eyebrow {
+  font-size: .7rem;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--accent2);
+  margin-bottom: .6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .4rem;
+}
+.estudos-eyebrow svg { flex-shrink: 0; }
+.estudos-header h2 {
+  font-size: clamp(1.4rem, 3vw, 2.1rem);
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, var(--text) 20%, var(--accent2) 70%, var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: .45rem;
+}
+.estudos-header p {
+  font-size: .85rem;
+  color: var(--text-dim);
+  max-width: 500px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.estudos-section { margin-bottom: 2.5rem; }
+
+.estudos-section-title {
+  display: flex;
+  align-items: center;
+  gap: .8rem;
+  margin-bottom: 1.4rem;
+  padding-bottom: .8rem;
+  border-bottom: 1px solid var(--border);
+}
+.estudos-section-icon {
+  width: 40px; height: 40px;
+  border-radius: 12px;
+  background: rgba(129,140,248,.1);
+  border: 1px solid rgba(129,140,248,.2);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--accent2);
+  flex-shrink: 0;
+}
+.estudos-section-title h3 {
+  font-size: 1.05rem; font-weight: 700; color: var(--text); line-height: 1.2;
+}
+.estudos-section-title p {
+  font-size: .73rem; color: var(--text-dim); margin-top: .15rem; line-height: 1.4;
+}
+
+.topics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(270px,100%), 1fr));
+  gap: 1rem;
+}
+
+.topic-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.2rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: .7rem;
+  transition: border-color var(--ease), box-shadow var(--ease), transform var(--ease);
+}
+.topic-card:hover {
+  border-color: var(--border2);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 36px rgba(0,0,0,.45);
+}
+
+.topic-card-header {
+  display: flex; align-items: flex-start; gap: .6rem;
+}
+.topic-icon {
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--accent2); flex-shrink: 0;
+}
+.topic-card-header h4 {
+  font-size: .9rem; font-weight: 700; color: var(--text); line-height: 1.3;
+}
+
+.topic-desc {
+  font-size: .75rem; color: var(--text-dim); line-height: 1.6;
+  padding-bottom: .4rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.topic-links {
+  display: flex; flex-direction: column; gap: .45rem;
+}
+
+.topic-link {
+  display: flex; align-items: center; gap: .6rem;
+  padding: .45rem .65rem;
+  border-radius: 9px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  text-decoration: none;
+  color: var(--text-muted);
+  font-size: .76rem;
+  transition: background var(--ease), border-color var(--ease), color var(--ease);
+}
+.topic-link:hover {
+  background: var(--surface3);
+  border-color: var(--border2);
+  color: var(--text);
+}
+.topic-link .link-arrow {
+  margin-left: auto;
+  display: flex; align-items: center;
+  color: var(--text-dim);
+  transition: color var(--ease), transform var(--ease);
+  flex-shrink: 0;
+}
+.topic-link:hover .link-arrow {
+  color: var(--accent);
+  transform: translate(2px, -2px);
+}
+
+.link-source {
+  font-size: .62rem;
+  font-weight: 700;
+  padding: .15rem .45rem;
+  border-radius: 99px;
+  white-space: nowrap;
+  letter-spacing: .03em;
+  flex-shrink: 0;
+}
+.brasil-escola { background: rgba(56,189,248,.1); color: var(--accent); border: 1px solid rgba(56,189,248,.2); }
+.khan          { background: rgba(129,140,248,.1); color: var(--accent2); border: 1px solid rgba(129,140,248,.2); }
+.mundo-edu     { background: rgba(132,204,22,.1); color: #a3e635; border: 1px solid rgba(132,204,22,.2); }
+
+.estudos-divider {
+  text-align: center;
+  margin: 2rem 0;
+  position: relative;
+}
+.estudos-divider::before,
+.estudos-divider::after {
+  content: '';
+  position: absolute;
+  top: 50%; width: calc(50% - 1.5rem);
+  height: 1px;
+  background: var(--border);
+}
+.estudos-divider::before { left: 0; }
+.estudos-divider::after  { right: 0; }
+.estudos-divider span {
+  position: relative;
+  font-size: .85rem;
+  color: var(--border2);
+  background: var(--bg);
+  padding: 0 .5rem;
+}
+
+/* ============================================================
+   FLASHCARD CAROUSEL — NotebookLM Style
+============================================================ */
+.fc-carousel-wrapper {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 0 .5rem;
+}
+
+.fc-carousel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0 .25rem;
+}
+
+.fc-counter {
+  font-size: .72rem;
+  color: var(--accent);
+  font-weight: 700;
+  letter-spacing: .08em;
+  font-variant-numeric: tabular-nums;
+}
+
+.fc-flip-hint {
+  font-size: .67rem;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+}
+.fc-flip-hint svg { flex-shrink: 0; }
+
+.fc-carousel-viewport {
+  overflow: hidden;
+  border-radius: 16px;
+}
+
+.fc-carousel-track {
+  display: flex;
+  will-change: transform;
+  transition: transform .48s cubic-bezier(.4,0,.2,1);
+}
+
+.fc-slide {
+  min-width: 100%;
+  padding: .25rem;
+}
+
+.fc-carousel-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .75rem;
+  margin-top: 1.3rem;
+}
+
+.fc-nav {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  color: var(--text-muted);
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: background var(--ease), border-color var(--ease), color var(--ease), opacity var(--ease);
+  flex-shrink: 0;
+}
+.fc-nav:hover:not(:disabled) {
+  background: var(--surface3);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.fc-nav:disabled { opacity: .25; cursor: default; pointer-events: none; }
+
+.fc-dots {
+  display: flex;
+  gap: .35rem;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 200px;
+}
+
+.fc-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--border2);
+  cursor: pointer;
+  transition: background var(--ease), width .25s ease, border-radius .25s ease;
+  border: none;
+  padding: 0;
+  flex-shrink: 0;
+}
+.fc-dot.active {
+  background: var(--accent);
+  width: 20px;
+  border-radius: 4px;
+}
+
+/* FLASHCARD com animação 3D */
+.flashcard {
+  perspective: 1200px;
+  cursor: pointer;
+  min-height: 230px;
+  outline: none;
+  display: block;
+}
+.flashcard:focus-visible .flashcard-inner {
+  box-shadow: 0 0 0 3px rgba(56,189,248,.4);
+}
+
+.flashcard-inner {
+  position: relative;
+  width: 100%; height: 100%;
+  min-height: 230px;
+  transform-style: preserve-3d;
+  transition: transform .55s cubic-bezier(.4,0,.2,1);
+  border-radius: 14px;
+}
+
+.flashcard.flipped .flashcard-inner {
+  transform: rotateY(180deg);
+}
+
+.flashcard-front,
+.flashcard-back {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 14px;
+  padding: 1.6rem 1.4rem 1.4rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: .8rem;
+  border: 1px solid var(--border);
+}
+
+.flashcard-front {
+  background: var(--surface2);
+  border-color: rgba(56,189,248,.3);
+  box-shadow: inset 0 1px 0 rgba(56,189,248,.08), 0 4px 24px rgba(0,0,0,.35);
+}
+.flashcard-front::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(56,189,248,.07) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.flashcard-back {
+  background: var(--surface2);
+  border-color: rgba(129,140,248,.3);
+  transform: rotateY(180deg);
+  box-shadow: inset 0 1px 0 rgba(129,140,248,.08), 0 4px 24px rgba(0,0,0,.35);
+}
+.flashcard-back::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(129,140,248,.07) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.fc-label {
+  font-size: .62rem;
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  font-weight: 700;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+}
+.fc-label svg { flex-shrink: 0; }
+.flashcard-front .fc-label { color: var(--accent); }
+.flashcard-back  .fc-label { color: var(--accent2); }
+
+.flashcard-front p, .flashcard-back p {
+  font-size: .87rem;
+  color: var(--text);
+  line-height: 1.7;
+  position: relative;
+}
+.flashcard-back p strong { color: var(--accent); }
+
+.fc-hint {
+  font-size: .65rem;
+  color: var(--text-dim);
+  text-align: center;
+  position: relative;
+  margin-top: auto;
+  padding-top: .6rem;
+  border-top: 1px solid var(--border);
+  letter-spacing: .02em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .3rem;
+}
+.fc-hint svg { flex-shrink: 0; }
+
+.flashcard:hover .flashcard-inner {
+  box-shadow: 0 0 0 2px rgba(56,189,248,.3), 0 10px 32px rgba(0,0,0,.5);
+}
+.flashcard.flipped:hover .flashcard-inner {
+  box-shadow: 0 0 0 2px rgba(129,140,248,.3), 0 10px 32px rgba(0,0,0,.5);
+}
+
+/* ============================================================
+   MOBILE RESPONSIVENESS
+============================================================ */
+@media (max-width: 600px) {
+  header { padding: 1.8rem .75rem 1rem; }
+  header h1 { font-size: 1.6rem; letter-spacing: -1px; }
+  header .subtitle { font-size: .8rem; }
+
+  .tab-btn { padding: .75rem .75rem; font-size: .76rem; gap: .3rem; }
+
+  .controls { padding: .75rem .75rem .5rem; gap: .5rem; }
+  .controls input { min-width: 0; width: 100%; }
+  .controls select { width: 100%; }
+  .filter-co-label { width: 100%; justify-content: center; }
+
+  .modal-big-symbol { font-size: 2.6rem; }
+  .modal-grid { grid-template-columns: 1fr; }
+  .modal-header { gap: .8rem; padding: 1rem 1.1rem; }
+  .modal-body { padding: .9rem 1rem 1.2rem; }
+
+  .co-page { padding: 1rem .75rem 2rem; }
+  .co-el-card { grid-template-columns: 50px 1fr; gap: .65rem; padding: .75rem; }
+
+  .estudos-page { padding: 1rem .75rem 2rem; }
+  .topics-grid { grid-template-columns: 1fr; }
+  .elements-grid { grid-template-columns: 1fr; }
+
+  .fc-carousel-wrapper { padding: 0; }
+  .fc-nav { width: 36px; height: 36px; }
+  .flashcard { min-height: 200px; }
+  .flashcard-inner { min-height: 200px; }
+  .flashcard-front, .flashcard-back { padding: 1.2rem 1.1rem; }
+
+  footer { font-size: .68rem; padding: 1.2rem .75rem; }
+}
+
+@media (max-width: 380px) {
+  .tab-btn { padding: .7rem .6rem; font-size: .72rem; }
+  .fc-dots { max-width: 160px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <p class="header-eyebrow">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 3h6M9 3v7L4 18a1 1 0 0 0 .9 1.5h14.2A1 1 0 0 0 20 18l-5-8V3"/><path d="M7 15h10"/></svg>
+    Química &amp; Território
+  </p>
+  <h1>Tabela Periódica<br>Interativa</h1>
+  <p class="subtitle">118 elementos · Conexões com Cidade Ocidental — GO</p>
+</header>
+
+<!-- TABS -->
+<div class="tabs-bar">
+  <button class="tab-btn active" data-tab="tabela">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="2"/><ellipse cx="12" cy="12" rx="10" ry="4"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(120 12 12)"/></svg>
+    Tabela Periódica
+  </button>
+  <button class="tab-btn" data-tab="cidade">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5"/><circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"/></svg>
+    Cidade Ocidental
+  </button>
+  <button class="tab-btn" data-tab="estudos">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+    Estudos &amp; Flashcards
+  </button>
+</div>
+
+<!-- ============================================================
+     TAB 1 — TABELA PERIÓDICA
+============================================================ -->
+<div class="tab-panel active" id="tab-tabela">
+
+  <div class="controls">
+    <input type="text" id="search" placeholder="Buscar elemento ou símbolo…">
+    <select id="filter">
+      <option value="">Todas as categorias</option>
+      <option value="alkali">Metais Alcalinos</option>
+      <option value="alkaline">Metais Alcalino-Terrosos</option>
+      <option value="lanthanide">Lantanídeos</option>
+      <option value="actinide">Actinídeos</option>
+      <option value="transition">Metais de Transição</option>
+      <option value="post-transition">Metais Pós-Transição</option>
+      <option value="metalloid">Semimetais</option>
+      <option value="nonmetal">Não-Metais</option>
+      <option value="halogen">Halogênios</option>
+      <option value="noble">Gases Nobres</option>
+    </select>
+    <label class="filter-co-label">
+      <input type="checkbox" id="filterCO">
+      <span class="co-icon">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5"/><circle cx="12" cy="12" r="2" fill="currentColor" stroke="none"/></svg>
+      </span>
+      Só conexões com CO
+    </label>
+  </div>
+
+  <div class="legend" id="legend"></div>
+
+  <div class="table-wrapper">
+    <div class="periodic-table" id="periodicTable"></div>
+    <p style="text-align:center;padding:2rem;color:var(--text-dim);font-size:.85rem;display:none" id="noResults">Nenhum elemento encontrado.</p>
+  </div>
+
+  <div style="text-align:center;padding:.4rem 1rem 1rem;font-size:.72rem;color:var(--text-dim);position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:.4rem;">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.5"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5"/><circle cx="12" cy="12" r="2" fill="var(--gold)" stroke="none"/></svg>
+    = elemento vinculado a um local de Cidade Ocidental · Clique em qualquer elemento para ver detalhes
+  </div>
+</div>
+
+<!-- ============================================================
+     TAB 2 — CIDADE OCIDENTAL
+============================================================ -->
+<div class="tab-panel" id="tab-cidade">
+  <div class="co-page">
+    <div class="co-page-header">
+      <h2>Elementos &amp; Cidade Ocidental</h2>
+      <p>Cada local da cidade está relacionado a um conjunto de elementos periódicos com base em propriedades químicas, históricas e culturais.</p>
+    </div>
+    <div id="coPlacesContainer"></div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modal">
+    <div class="modal-header" id="modalHeader">
+      <div class="modal-big-symbol" id="mSymbol"></div>
+      <div class="modal-title-block">
+        <h2 id="mName"></h2>
+        <div class="modal-number" id="mNumber"></div>
+      </div>
+      <button class="modal-close" id="modalClose">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-grid">
+        <div class="modal-field">
+          <label>Número Atômico</label>
+          <span id="mAtomicNum"></span>
+        </div>
+        <div class="modal-field">
+          <label>Massa Atômica</label>
+          <span id="mMass"></span>
+        </div>
+        <div class="modal-field">
+          <label>Categoria</label>
+          <span id="mCategory"></span>
+        </div>
+        <div class="modal-field">
+          <label>Estado (25°C)</label>
+          <span id="mState"></span>
+        </div>
+        <div class="modal-field full">
+          <label>Configuração Eletrônica</label>
+          <span id="mElectron"></span>
+        </div>
+      </div>
+      <div class="modal-curiosity" id="mCuriosity"></div>
+      <div class="co-section" id="mCoSection">
+        <div class="co-header">
+          <div class="co-dot"></div>
+          <span class="co-title">Conexão — Cidade Ocidental</span>
+        </div>
+        <div id="mCoContent"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     TAB 3 — ESTUDOS & FLASHCARDS
+============================================================ -->
+<div class="tab-panel" id="tab-estudos">
+  <div class="estudos-page">
+
+    <div class="estudos-header">
+      <p class="estudos-eyebrow">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        Portal de Estudos
+      </p>
+      <h2>Estudos &amp; Flashcards</h2>
+      <p>Curadoria de conteúdo confiável e revisão ativa para dominar a Tabela Periódica.</p>
+    </div>
+
+    <!-- SEÇÃO 1: LINKS EXTERNOS -->
+    <section class="estudos-section">
+      <div class="estudos-section-title">
+        <span class="estudos-section-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        </span>
+        <div>
+          <h3>Curadoria de Conteúdo</h3>
+          <p>Links selecionados de fontes confiáveis para cada tema essencial</p>
+        </div>
+      </div>
+
+      <div class="topics-grid">
+
+        <!-- Card 1 -->
+        <div class="topic-card">
+          <div class="topic-card-header">
+            <span class="topic-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            </span>
+            <h4>História e Evolução da Tabela</h4>
+          </div>
+          <p class="topic-desc">Da proposta de Mendeleev em 1869 até a organização moderna com 118 elementos.</p>
+          <div class="topic-links">
+            <a href="https://brasilescola.uol.com.br/quimica/historia-tabela-periodica.htm" target="_blank" rel="noopener" class="topic-link">
+              <span class="link-source brasil-escola">Brasil Escola</span>
+              <span>História da Tabela Periódica</span>
+              <span class="link-arrow"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
+            </a>
+            <a href="https://www.khanacademy.org/science/ap-chemistry-beta/x2eef969c74e0d802:atomic-structure-and-properties/x2eef969c74e0d802:history-of-atomic-structure/a/discovery-of-the-electron-and-nucleus" target="_blank" rel="noopener" class="topic-link">
+              <span class="link-source khan">Khan Academy</span>
+              <span>Descoberta do elétron e núcleo</span>
+              <span class="link-arrow"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
+            </a>
+            <a href="https://mundoeducacao.uol.com.br/quimica/historia-tabela-periodica.htm" target="_blank" rel="noopener" class="topic-link">
+              <span class="link-source mundo-edu">Mundo Educação</span>
+              <span>A evolução histórica</span>
+              <span class="link-arrow"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="topic-card">
+          <div class="topic-card-header">
+            <span class="topic-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+            </span>
+            <h4>Organização: Grupos, Períodos e Famílias</h4>
+          </div>
+          <p class="topic-desc">Como os elementos são dispostos em linhas (períodos) e colunas (grupos/famílias).</p>
+          <div class="topic-links">
+            <a href="https://brasilescola.uol.com.br/quimica/grupos-periodos-tabela-periodica.htm" target="_blank" rel="noopener" class="topic-link">
+              <span class="link-source brasil-escola">Brasil Escola</span>
+              <span>Grupos e Períodos</span>
+              <span class="link-arrow"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
+            </a>
+            <a href="https://pt.khanacademy.org/science/chemistry/periodic-table/periodic-table-trends-bonding/a/periodic-table-and-periods" target="_blank" rel="noopener" class="topic-link">
+              <span class="link-source khan">Khan Academy</span>
+              <span>A tabela periódica e períodos</span>
+              <span class="link-arrow"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
+            </a>
+            <a href="https://mundoeducacao.uol.com.br/quimica/grupos-familias-tabela-periodica.htm" target="_blank" rel="noopener" class="topic-link">
+              <span class="link-source mundo-edu">Mundo Educação</span>
+              <span>Grupos e Famílias</span>
+              <span class="link-arrow"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="topic-card">
+          <div class="topic-card-header">
+            <span class="topic-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+            </span>
+            <h4>Propriedades Periódicas</h4>
+          </div>
+          <p class="topic-desc">Raio atômico, eletronegatividade, energia de ionização, afinidade eletrônica e suas tendências.</p>
+          <div class="topic-links">
+            <a href="https://brasilescola.uol.com.br/quimica/propriedades-periodicas.htm" target="_blank" rel="noopener" class="topic-link">
+              <span class="link-source brasil-escola">Brasil Escola</span>
+              <span>Propriedades Periódicas</span>
+              <span class="link-arrow"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
+            </a>
+            <a href="https://pt.khanacademy.org/science/chemistry/periodic-table/periodic-table-trends-bonding/a/periodic-table-trends-electronegativity" target="_blank" rel="noopener" class="topic-link">
+              <span class="link-source khan">Khan Academy</span>
+              <span>Tendências: Eletronegatividade</span>
+              <span class="link-arrow"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
+            </a>
+            <a href="https://mundoeducacao.uol.com.br/quimica/propriedades-periodicas.htm" target="_blank" rel="noopener" class="topic-link">
+              <span class="link-source mundo-edu">Mundo Educação</span>
+              <span>Propriedades dos Elementos</span>
+              <span class="link-arrow"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="topic-card">
+          <div class="topic-card-header">
+            <span class="topic-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="2"/><ellipse cx="12" cy="12" rx="10" ry="4"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(120 12 12)"/></svg>
+            </span>
+            <h4>Distribuição Eletrônica e Diagrama de Pauling</h4>
+          </div>
+          <p class="topic-desc">Como os elétrons se distribuem nos subníveis de energia seguindo o diagrama de Linus Pauling.</p>
+          <div class="topic-links">
+            <a href="https://brasilescola.uol.com.br/quimica/distribuicao-eletronica.htm" target="_blank" rel="noopener" class="topic-link">
+              <span class="link-source brasil-escola">Brasil Escola</span>
+              <span>Distribuição Eletrônica</span>
+              <span class="link-arrow"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
+            </a>
+            <a href="https://pt.khanacademy.org/science/chemistry/electronic-structure-of-atoms/electron-configurations-jay-sal/a/electron-configurations-article" target="_blank" rel="noopener" class="topic-link">
+              <span class="link-source khan">Khan Academy</span>
+              <span>Configurações Eletrônicas</span>
+              <span class="link-arrow"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
+            </a>
+            <a href="https://mundoeducacao.uol.com.br/quimica/diagrama-de-pauling.htm" target="_blank" rel="noopener" class="topic-link">
+              <span class="link-source mundo-edu">Mundo Educação</span>
+              <span>Diagrama de Pauling</span>
+              <span class="link-arrow"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
+            </a>
+          </div>
+        </div>
+
+      </div><!-- /topics-grid -->
+    </section>
+
+    <!-- DIVISOR -->
+    <div class="estudos-divider"><span>✦</span></div>
+
+    <!-- SEÇÃO 2: FLASHCARDS CARROSSEL -->
+    <section class="estudos-section">
+      <div class="estudos-section-title">
+        <span class="estudos-section-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="16" height="13" rx="2"/><path d="M6 7V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-2"/></svg>
+        </span>
+        <div>
+          <h3>Flashcards Interativos</h3>
+          <p>Navegue pelo carrossel e clique no card para revelar a resposta com efeito 3D</p>
+        </div>
+      </div>
+
+      <!-- CAROUSEL WRAPPER -->
+      <div class="fc-carousel-wrapper">
+        <div class="fc-carousel-header">
+          <span class="fc-counter" id="fcCounter">1 / 10</span>
+          <span class="fc-flip-hint">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            Clique no card para virar
+          </span>
+        </div>
+
+        <div class="fc-carousel-viewport">
+          <div class="fc-carousel-track" id="fcTrack">
+
+            <!-- SLIDE 1 -->
+            <div class="fc-slide">
+              <div class="flashcard" tabindex="0" aria-label="Flashcard: quem organizou a tabela periódica">
+                <div class="flashcard-inner">
+                  <div class="flashcard-front">
+                    <span class="fc-label">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r=".5" fill="currentColor"/></svg>
+                      Pergunta
+                    </span>
+                    <p>Quem propôs a primeira versão organizada da Tabela Periódica e em que ano?</p>
+                    <span class="fc-hint">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                      Toque para revelar a resposta
+                    </span>
+                  </div>
+                  <div class="flashcard-back">
+                    <span class="fc-label">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                      Resposta
+                    </span>
+                    <p><strong>Dmitri Mendeleev</strong>, em <strong>1869</strong>. Ele organizou os elementos por massa atômica crescente e percebeu que as propriedades se repetiam periodicamente.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SLIDE 2 -->
+            <div class="fc-slide">
+              <div class="flashcard" tabindex="0" aria-label="Flashcard: o que são períodos">
+                <div class="flashcard-inner">
+                  <div class="flashcard-front">
+                    <span class="fc-label">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r=".5" fill="currentColor"/></svg>
+                      Pergunta
+                    </span>
+                    <p>O que são os <strong>períodos</strong> da Tabela Periódica e quantos existem?</p>
+                    <span class="fc-hint">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                      Toque para revelar a resposta
+                    </span>
+                  </div>
+                  <div class="flashcard-back">
+                    <span class="fc-label">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                      Resposta
+                    </span>
+                    <p>Períodos são as <strong>linhas horizontais</strong> da Tabela. Existem <strong>7 períodos</strong>. O número do período indica a quantidade de camadas eletrônicas (níveis de energia) do átomo.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SLIDE 3 -->
+            <div class="fc-slide">
+              <div class="flashcard" tabindex="0" aria-label="Flashcard: família dos gases nobres">
+                <div class="flashcard-inner">
+                  <div class="flashcard-front">
+                    <span class="fc-label">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r=".5" fill="currentColor"/></svg>
+                      Pergunta
+                    </span>
+                    <p>Por que os <strong>gases nobres</strong> (Família 18) são quimicamente inertes?</p>
+                    <span class="fc-hint">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                      Toque para revelar a resposta
+                    </span>
+                  </div>
+                  <div class="flashcard-back">
+                    <span class="fc-label">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                      Resposta
+                    </span>
+                    <p>Porque possuem a camada de valência <strong>completamente preenchida</strong> (8 elétrons, exceto o He com 2). Isso os torna estáveis e praticamente não reativos.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SLIDE 4 -->
+            <div class="fc-slide">
+              <div class="flashcard" tabindex="0" aria-label="Flashcard: raio atômico tendência">
+                <div class="flashcard-inner">
+                  <div class="flashcard-front">
+                    <span class="fc-label">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r=".5" fill="currentColor"/></svg>
+                      Pergunta
+                    </span>
+                    <p>Como o <strong>raio atômico</strong> varia ao longo de um período (da esquerda para a direita)?</p>
+                    <span class="fc-hint">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                      Toque para revelar a resposta
+                    </span>
+                  </div>
+                  <div class="flashcard-back">
+                    <span class="fc-label">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                      Resposta
+                    </span>
+                    <p>O raio atômico <strong>diminui</strong> da esquerda para a direita. O aumento da carga nuclear (Z) atrai os elétrons com mais força, comprimindo a eletrosfera.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SLIDE 5 -->
+            <div class="fc-slide">
+              <div class="flashcard" tabindex="0" aria-label="Flashcard: elemento mais eletronegativo">
+                <div class="flashcard-inner">
+                  <div class="flashcard-front">
+                    <span class="fc-label">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r=".5" fill="currentColor"/></svg>
+                      Pergunta
+                    </span>
+                    <p>Qual é o elemento <strong>mais eletronegativo</strong> da Tabela Periódica?</p>
+                    <span class="fc-hint">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                      Toque para revelar a resposta
+                    </span>
+                  </div>
+                  <div class="flashcard-back">
+                    <span class="fc-label">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                      Resposta
+                    </span>
+                    <p>O <strong>Flúor (F)</strong>, número atômico 9, é o elemento mais eletronegativo (valor 4,0 na escala de Pauling). A eletronegatividade aumenta em direção ao canto superior direito da tabela.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SLIDE 6 -->
+            <div class="fc-slide">
+              <div class="flashcard" tabindex="0" aria-label="Flashcard: diagrama de Pauling">
+                <div class="flashcard-inner">
+                  <div class="flashcard-front">
+                    <span class="fc-label">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r=".5" fill="currentColor"/></svg>
+                      Pergunta
+                    </span>
+                    <p>Qual é a ordem correta de preenchimento dos subníveis no <strong>Diagrama de Pauling</strong>?</p>
+                    <span class="fc-hint">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                      Toque para revelar a resposta
+                    </span>
+                  </div>
+                  <div class="flashcard-back">
+                    <span class="fc-label">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                      Resposta
+                    </span>
+                    <p>1s → 2s → 2p → 3s → 3p → <strong>4s → 3d</strong> → 4p → 5s → 4d → 5p → 6s → 4f → 5d → 6p → 7s → 5f → 6d → 7p. Segue as diagonais do diagrama de menor para maior energia.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SLIDE 7 -->
+            <div class="fc-slide">
+              <div class="flashcard" tabindex="0" aria-label="Flashcard: metais alcalinos">
+                <div class="flashcard-inner">
+                  <div class="flashcard-front">
+                    <span class="fc-label">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r=".5" fill="currentColor"/></svg>
+                      Pergunta
+                    </span>
+                    <p>Quais são as características gerais dos <strong>Metais Alcalinos</strong> (Família 1)?</p>
+                    <span class="fc-hint">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                      Toque para revelar a resposta
+                    </span>
+                  </div>
+                  <div class="flashcard-back">
+                    <span class="fc-label">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                      Resposta
+                    </span>
+                    <p>Possuem <strong>1 elétron na camada de valência</strong>, são muito reativos, moles, brilhosos e de baixa densidade. Reagem violentamente com água, formando bases (hidróxidos) e liberando H₂.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SLIDE 8 -->
+            <div class="fc-slide">
+              <div class="flashcard" tabindex="0" aria-label="Flashcard: energia de ionização">
+                <div class="flashcard-inner">
+                  <div class="flashcard-front">
+                    <span class="fc-label">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r=".5" fill="currentColor"/></svg>
+                      Pergunta
+                    </span>
+                    <p>O que é <strong>energia de ionização</strong> e como ela varia na Tabela?</p>
+                    <span class="fc-hint">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                      Toque para revelar a resposta
+                    </span>
+                  </div>
+                  <div class="flashcard-back">
+                    <span class="fc-label">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                      Resposta
+                    </span>
+                    <p>É a energia necessária para <strong>remover um elétron</strong> de um átomo gasoso. Aumenta da esquerda para a direita em um período e diminui de cima para baixo em um grupo.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SLIDE 9 -->
+            <div class="fc-slide">
+              <div class="flashcard" tabindex="0" aria-label="Flashcard: halogênios">
+                <div class="flashcard-inner">
+                  <div class="flashcard-front">
+                    <span class="fc-label">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r=".5" fill="currentColor"/></svg>
+                      Pergunta
+                    </span>
+                    <p>O que une os elementos da família dos <strong>Halogênios</strong> (Família 17)?</p>
+                    <span class="fc-hint">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                      Toque para revelar a resposta
+                    </span>
+                  </div>
+                  <div class="flashcard-back">
+                    <span class="fc-label">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                      Resposta
+                    </span>
+                    <p>Todos têm <strong>7 elétrons na camada de valência</strong> e alta reatividade. Formam sais ao reagir com metais (daí o nome: "formadores de sal"). Exemplos: F, Cl, Br, I, At.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SLIDE 10 -->
+            <div class="fc-slide">
+              <div class="flashcard" tabindex="0" aria-label="Flashcard: lantanídeos e actinídeos">
+                <div class="flashcard-inner">
+                  <div class="flashcard-front">
+                    <span class="fc-label">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><circle cx="12" cy="17" r=".5" fill="currentColor"/></svg>
+                      Pergunta
+                    </span>
+                    <p>Por que <strong>lantanídeos e actinídeos</strong> ficam separados do corpo principal da Tabela?</p>
+                    <span class="fc-hint">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                      Toque para revelar a resposta
+                    </span>
+                  </div>
+                  <div class="flashcard-back">
+                    <span class="fc-label">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                      Resposta
+                    </span>
+                    <p>Por convenção gráfica, para não tornar a tabela muito larga. Eles pertenceriam ao período 6 (lantanídeos) e 7 (actinídeos) entre os grupos 3 e 4, mas são deslocados para baixo.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /fc-carousel-track -->
+        </div><!-- /fc-carousel-viewport -->
+
+        <div class="fc-carousel-controls">
+          <button class="fc-nav" id="fcPrev" aria-label="Card anterior" disabled>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <div class="fc-dots" id="fcDots"></div>
+          <button class="fc-nav" id="fcNext" aria-label="Próximo card">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+
+      </div><!-- /fc-carousel-wrapper -->
+    </section>
+
+  </div><!-- /estudos-page -->
+</div><!-- /tab-estudos -->
+
+<footer>
+  Tabela Periódica Interativa · 118 elementos reconhecidos pela IUPAC · Projeto educativo — Cidade Ocidental, GO
+  <br>
+  Criado por Miguel Antônio e <a href="https://gparrini.github.io/page-links/" target="_blank" rel="noopener">Giuseppe Parrini</a>
+</footer>
+
+<script>
+// ================================================================
+//  SVG ICONS
+// ================================================================
+const SVG = {
+  lightning: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`,
+  leaf:      `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>`,
+  church:    `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v4M10 4h4"/><path d="M6 22V12a6 6 0 0 1 12 0v10"/><path d="M3 22h18M9 22v-4h6v4"/></svg>`,
+  jar:       `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 2h8l1 5H7L8 2z"/><path d="M7 7c0 0-1 1-1 4v8a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-8c0-3-1-4-1-4"/><path d="M10 12h4M10 16h2.5"/></svg>`,
+  droplet:   `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg>`,
+  landmark:  `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 22h18M6 22V11M10 22V11M14 22V11M18 22V11M3 11h18M12 2L3 8h18L12 2z"/></svg>`,
+  sunset:    `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 18a5 5 0 0 0-10 0"/><path d="M12 9V2M4.22 10.22l1.42 1.42M1 18h2M21 18h2M18.36 11.64l1.42-1.42M23 22H1M16 5l-4 4-4-4"/></svg>`,
+  star:      `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
+  bag:       `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>`,
+  tree:      `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22V16M12 16l-4-6h3V6l-3-4h8l-3 4v4h3l-4 6z"/></svg>`,
+  mountain:  `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m8 3 4 8 5-5 5 15H2L8 3z"/><path d="M4.14 15.08c2.62-1.57 5.24-1.43 7.86.42 2.74 1.94 5.49 2 8.23.19"/></svg>`,
+  grass:     `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 22c1-3 3-6 6-8-1 3-2 6-1 8"/><path d="M8 22c0-4 2-8 6-10-2 3-2 7 0 10"/><path d="M14 22c1-3 4-5 8-4-3 1-5 3-5 4"/></svg>`,
+  bulb:      `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="9" y1="18" x2="15" y2="18"/><line x1="10" y1="22" x2="14" y2="22"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg>`,
+};
+
+// ================================================================
+//  MAPEAMENTO: local → ícone SVG, descrição curta
+// ================================================================
+const PLACES = {
+  usina:    { icon: SVG.lightning, name:'Usina Hidrelétrica do Ribeirão Saia Velha', desc:'Primeira usina a fornecer energia para a construção de Brasília. Patrimônio histórico e artístico de Goiás.' },
+  quilombo: { icon: SVG.leaf,      name:'Quilombo Mesquita', desc:'Comunidade remanescente de quilombo com mais de 200 anos, certificada pela Fundação Cultural Palmares.' },
+  santuario:{ icon: SVG.church,    name:'Santuário Nacional Jardim da Imaculada', desc:'Centro nacional de devoção mariana com arquitetura imponente. Patrimônio religioso e cultural do município.' },
+  marmelada:{ icon: SVG.jar,       name:'Produção de Marmelada (Doce de Marmelo)', desc:'Tradição artesanal de mais de 140 anos, Patrimônio Cultural e Imaterial de Goiás. Símbolo na bandeira e no hino da cidade.' },
+  lago:     { icon: SVG.droplet,   name:'Lago Saia Velha / Barragem do Córrego Jacob', desc:'Barragem construída em 1970 para abastecer a Fazenda Aracati. Berço histórico da fundação da cidade.' },
+  memorial: { icon: SVG.landmark,  name:'Memorial Cidade Ocidental', desc:'Espaço de preservação da memória histórica, política e social do município desde sua fundação.' },
+  orla:     { icon: SVG.sunset,    name:'Orla do Lago Jacob', desc:'Cartão-postal e pulmão verde da cidade. Reserva ambiental, palco de grandes eventos culturais.' },
+  carnaval: { icon: SVG.star,      name:'Bloco de Carnaval "Vai Quem Quer"', desc:'Bloco popular inclusivo que reúne a comunidade ocidentalense no carnaval de rua.' },
+  feira:    { icon: SVG.bag,       name:'Feira de Sábado', desc:'Espaço de economia criativa, gastronomia local, artesanato e troca direta entre produtores e consumidores.' },
+  parque:   { icon: SVG.tree,      name:'Parque Ecológico Chico Mendes', desc:'Bosque urbanizado no centro da cidade com árvores nativas do Cerrado, trilhas ecológicas e lago artificial.' },
+  cachoeira:{ icon: SVG.mountain,  name:'Cachoeira Saia Velha / Águas Correntes Park', desc:'Cachoeira natural inserida no cerrado, com trilhas e 150 espécies de árvores nativas.' },
+  cerrado:  { icon: SVG.grass,     name:'Vegetação do Cerrado', desc:'Bioma que envolve todo o município, com espécies únicas, veredas e biodiversidade excepcional.' },
+};
+
+// ================================================================
+//  DADOS DOS ELEMENTOS
+// ================================================================
+const ELEMENTS = [
+  { number:1,  symbol:"H",  name:"Hidrogênio",    mass:"1,008",   category:"nonmetal",       state:"Gás",     electron:"1s¹",                             curiosity:"O elemento mais abundante do universo, compõe cerca de 75% da massa bariônica.", row:1, col:1,
+    co: { place:"lago", reason:"A água é H₂O — dois átomos de hidrogênio para cada de oxigênio. O Lago Jacob nasceu em 1970 para abastecer a Fazenda Aracati, sendo o berço líquido da cidade. O hidrogênio é o fundamento invisível de toda a história aquática de Cidade Ocidental.", tags:["H₂O", "Fundação da cidade", "Abastecimento histórico"] } },
+  { number:2,  symbol:"He", name:"Hélio",          mass:"4,003",   category:"noble",          state:"Gás",     electron:"1s²",                             curiosity:"Segundo elemento mais abundante do universo; foi descoberto no espectro solar antes de ser encontrado na Terra.", row:1, col:18,
+    co: { place:"carnaval", reason:"O hélio infla balões — o símbolo visual mais universal da festa e da alegria coletiva. No Bloco 'Vai Quem Quer', balões coloridos marcam a celebração popular: leves, alegres e capazes de subir alto, como o espírito carnavalesco que une a comunidade.", tags:["Festa popular", "Leveza", "Alegria coletiva"] } },
+  { number:3,  symbol:"Li", name:"Lítio",          mass:"6,941",   category:"alkali",         state:"Sólido",  electron:"[He] 2s¹",                        curiosity:"O metal mais leve; é essencial nas baterias de smartphones e carros elétricos.", row:2, col:1,
+    co: { place:"feira", reason:"O lítio é o metal mais leve e reativo, movido pela menor carga. Na Feira de Sábado, o menor vendedor, o agricultor familiar com poucos recursos, move toda a economia local com uma energia desproporcional ao seu tamanho — assim como o lítio.", tags:["Leveza", "Reatividade", "Pequeno produtor"] } },
+  { number:4,  symbol:"Be", name:"Berílio",        mass:"9,012",   category:"alkaline",       state:"Sólido",  electron:"[He] 2s²",                        curiosity:"Extremamente rígido e leve; usado em componentes aeroespaciais e janelas de raios-X.", row:2, col:2, co: null },
+  { number:5,  symbol:"B",  name:"Boro",           mass:"10,81",   category:"metalloid",      state:"Sólido",  electron:"[He] 2s² 2p¹",                    curiosity:"Essencial para a estrutura dos vidros borossilicatos (Pyrex) e para abrasivos industriais.", row:2, col:13, co: null },
+  { number:6,  symbol:"C",  name:"Carbono",        mass:"12,011",  category:"nonmetal",       state:"Sólido",  electron:"[He] 2s² 2p²",                    curiosity:"Base de toda a vida orgânica; o diamante e o grafite são formas puras de carbono.", row:2, col:14,
+    co: { place:"cerrado", reason:"O carbono é o elemento de toda a vida orgânica, e o Cerrado é um dos biomas mais ricos em biodiversidade do planeta. As plantas do Cerrado que circundam Cidade Ocidental fixam carbono continuamente, formando a base da cadeia alimentar e climática regional.", tags:["Fotossíntese", "Biodiversidade", "Vida orgânica"] } },
+  { number:7,  symbol:"N",  name:"Nitrogênio",     mass:"14,007",  category:"nonmetal",       state:"Gás",     electron:"[He] 2s² 2p³",                    curiosity:"Compõe 78% da atmosfera terrestre e é vital para a síntese de proteínas.", row:2, col:15,
+    co: { place:"marmelada", reason:"O nitrogênio é fundamental para o crescimento do marmelo: as proteínas e enzimas que amadurecem a fruta dependem diretamente do nitrogênio absorvido do solo. Solos ricos em N produzem frutos mais firmes e doces — essenciais para a boa marmelada artesanal.", tags:["Agricultura", "Crescimento vegetal", "Marmelo"] } },
+  { number:8,  symbol:"O",  name:"Oxigênio",       mass:"15,999",  category:"nonmetal",       state:"Gás",     electron:"[He] 2s² 2p⁴",                    curiosity:"O terceiro elemento mais abundante do universo e essencial para a respiração aeróbia.", row:2, col:16,
+    co: { place:"orla", reason:"A Orla do Lago Jacob é o pulmão verde da cidade: reserva ambiental onde o Cerrado faz fotossíntese e libera O₂ continuamente. Cada evento cultural, caminhada e encontro na orla só é possível graças ao oxigênio gerado pela vegetação nativa preservada.", tags:["Pulmão verde", "Reserva ambiental", "Fotossíntese"] } },
+  { number:9,  symbol:"F",  name:"Flúor",          mass:"18,998",  category:"halogen",        state:"Gás",     electron:"[He] 2s² 2p⁵",                    curiosity:"O elemento mais eletronegativo de todos; reage com quase qualquer substância.", row:2, col:17, co: null },
+  { number:10, symbol:"Ne", name:"Neônio",         mass:"20,180",  category:"noble",          state:"Gás",     electron:"[He] 2s² 2p⁶",                    curiosity:"Emite uma luz laranja-avermelhada característica; amplamente usado em letreiros luminosos.", row:2, col:18,
+    co: { place:"carnaval", reason:"O neônio brilha intensamente quando energizado — sua luz vibrante é o símbolo das festas. O Bloco 'Vai Quem Quer' carrega no nome a inclusão total: como o neônio, que brilha sem distinção sempre que recebe energia, o bloco ilumina qualquer pessoa que chegue.", tags:["Luz e festa", "Inclusão popular", "Energia coletiva"] } },
+  { number:11, symbol:"Na", name:"Sódio",          mass:"22,990",  category:"alkali",         state:"Sólido",  electron:"[Ne] 3s¹",                        curiosity:"Regula o equilíbrio hídrico do corpo; o sal de cozinha (NaCl) é seu composto mais famoso.", row:3, col:1,
+    co: { place:"feira", reason:"O sal (NaCl) é o ingrediente mais democrático da culinária e está presente em todos os alimentos da Feira de Sábado. Conserva, realça sabor e é indispensável — assim como a feira é o conservante cultural da gastronomia local ocidentalense.", tags:["Sal e culinária", "Conservação", "Gastronomia local"] } },
+  { number:12, symbol:"Mg", name:"Magnésio",       mass:"24,305",  category:"alkaline",       state:"Sólido",  electron:"[Ne] 3s²",                        curiosity:"Queima com chama branca brilhante; essencial para a fotossíntese nas plantas.", row:3, col:2,
+    co: { place:"cerrado", reason:"O magnésio é o átomo central da clorofila — sem ele não há fotossíntese. Cada árvore retorcida do Cerrado, cada vereda ao redor de Cidade Ocidental, existe porque suas células carregam magnésio nos cloroplastos, capturando a luz solar do Planalto Central.", tags:["Clorofila", "Cerrado", "Fotossíntese"] } },
+  { number:13, symbol:"Al", name:"Alumínio",       mass:"26,982",  category:"post-transition",state:"Sólido",  electron:"[Ne] 3s² 3p¹",                    curiosity:"O metal mais abundante na crosta terrestre; reciclado infinitamente sem perda de qualidade.", row:3, col:13,
+    co: { place:"usina", reason:"Toda usina hidrelétrica usa alumínio em suas estruturas elétricas: o metal é excelente condutor, leve e anticorrosivo, ideal para fios de transmissão e gabinetes elétricos. A Usina do Ribeirão Saia Velha dependia deste metal para levar energia até os canteiros de obras de Brasília.", tags:["Condução elétrica", "Transmissão de energia", "Usina"] } },
+  { number:14, symbol:"Si", name:"Silício",        mass:"28,086",  category:"metalloid",      state:"Sólido",  electron:"[Ne] 3s² 3p²",                    curiosity:"Base dos chips e processadores; o Vale do Silício leva seu nome.", row:3, col:14, co: null },
+  { number:15, symbol:"P",  name:"Fósforo",        mass:"30,974",  category:"nonmetal",       state:"Sólido",  electron:"[Ne] 3s² 3p³",                    curiosity:"Essencial ao DNA e ATP; o fósforo branco brilha no escuro ao oxidar.", row:3, col:15,
+    co: { place:"marmelada", reason:"O fósforo é nutriente essencial para o amadurecimento das frutas — participa das reações de energia (ATP) que a planta usa para produzir açúcares. Solos ricos em fósforo produzem marmelos mais doces, ingrediente central da tradição artesanal do Quilombo Mesquita e de Cidade Ocidental.", tags:["ATP vegetal", "Nutrição do marmelo", "Artesanato quilombola"] } },
+  { number:16, symbol:"S",  name:"Enxofre",        mass:"32,06",   category:"nonmetal",       state:"Sólido",  electron:"[Ne] 3s² 3p⁴",                    curiosity:"Cheira a ovo podre (como H₂S); utilizado na vulcanização da borracha.", row:3, col:16, co: null },
+  { number:17, symbol:"Cl", name:"Cloro",          mass:"35,45",   category:"halogen",        state:"Gás",     electron:"[Ne] 3s² 3p⁵",                    curiosity:"Usado para desinfetar água; o gás cloro foi usado como arma na Primeira Guerra Mundial.", row:3, col:17,
+    co: { place:"lago", reason:"O cloro (na forma de hipoclorito) é o guardião da qualidade da água tratada. Desde que a Barragem do Córrego Jacob foi construída para abastecer a cidade, o cloro passou a ser o elemento que garante que a água do lago chegue potável às casas de Cidade Ocidental.", tags:["Tratamento de água", "Saúde pública", "Abastecimento"] } },
+  { number:18, symbol:"Ar", name:"Argônio",        mass:"39,948",  category:"noble",          state:"Gás",     electron:"[Ne] 3s² 3p⁶",                    curiosity:"O gás nobre mais abundante na atmosfera; cria atmosfera inerte em soldagem.", row:3, col:18, co: null },
+  { number:19, symbol:"K",  name:"Potássio",       mass:"39,098",  category:"alkali",         state:"Sólido",  electron:"[Ar] 4s¹",                        curiosity:"Vital para a condução nervosa; bananas são famosas por conter potássio.", row:4, col:1,
+    co: { place:"marmelada", reason:"O marmelo é uma fruta rica em potássio, mineral essencial para o amadurecimento do fruto e para a pectina que dá consistência ao doce. O potássio regula os processos vitais da planta e é o elemento central na agricultura artesanal do Quilombo Mesquita há mais de 140 anos.", tags:["Pectina do marmelo", "Patrimônio imaterial", "Quilombo Mesquita"] } },
+  { number:20, symbol:"Ca", name:"Cálcio",         mass:"40,078",  category:"alkaline",       state:"Sólido",  electron:"[Ar] 4s²",                        curiosity:"O elemento mais abundante nos ossos e dentes humanos.", row:4, col:2,
+    co: { place:"santuario", reason:"O cálcio é o elemento das estruturas e da solidez: está nos ossos que nos sustentam e no carbonato de cálcio (calcário) que compõe alvenarias e revestimentos. A arquitetura imponente do Santuário Jardim da Imaculada é sustentada literalmente por este elemento.", tags:["Arquitetura sagrada", "Calcário", "Solidez estrutural"] } },
+  { number:21, symbol:"Sc", name:"Escândio",       mass:"44,956",  category:"transition",     state:"Sólido",  electron:"[Ar] 3d¹ 4s²",                    curiosity:"Usado em ligas leves de alta resistência para bicicletas esportivas e bastões de beisebol.", row:4, col:3, co: null },
+  { number:22, symbol:"Ti", name:"Titânio",        mass:"47,867",  category:"transition",     state:"Sólido",  electron:"[Ar] 3d² 4s²",                    curiosity:"Tão resistente quanto o aço, mas 45% mais leve; biocompatível para implantes.", row:4, col:4,
+    co: { place:"usina", reason:"O titânio é usado em turbinas hidráulicas modernas por sua resistência à corrosão em contato com água. Equipamentos de usinas como a do Saia Velha dependem de materiais anticorrosivos para operar décadas sem falhar — o titânio é o símbolo desta durabilidade.", tags:["Resistência à corrosão", "Turbinas hidráulicas", "Durabilidade"] } },
+  { number:23, symbol:"V",  name:"Vanádio",        mass:"50,942",  category:"transition",     state:"Sólido",  electron:"[Ar] 3d³ 4s²",                    curiosity:"Adiciona tenacidade ao aço; encontrado em alguns cogumelos e no sangue de tunicados.", row:4, col:5, co: null },
+  { number:24, symbol:"Cr", name:"Cromo",          mass:"51,996",  category:"transition",     state:"Sólido",  electron:"[Ar] 3d⁵ 4s¹",                    curiosity:"Responsável pela cor de esmeraldas e rubis; torna o aço inoxidável.", row:4, col:6, co: null },
+  { number:25, symbol:"Mn", name:"Manganês",       mass:"54,938",  category:"transition",     state:"Sólido",  electron:"[Ar] 3d⁵ 4s²",                    curiosity:"Essencial para a produção de aço e para o metabolismo celular humano.", row:4, col:7, co: null },
+  { number:26, symbol:"Fe", name:"Ferro",          mass:"55,845",  category:"transition",     state:"Sólido",  electron:"[Ar] 3d⁶ 4s²",                    curiosity:"O núcleo da Terra é principalmente ferro; a hemoglobina do sangue contém ferro.", row:4, col:8,
+    co: { place:"usina", reason:"As turbinas, comportas e estruturas metálicas de uma usina hidrelétrica colonial são construídas essencialmente em ferro e aço. O ferro conduz energia mecânica em rotação, transformando a força da água em eletricidade — exatamente o que a Usina do Saia Velha fez para a construção de Brasília.", tags:["Turbinas de ferro", "Estrutura colonial", "Energia para Brasília"] } },
+  { number:27, symbol:"Co", name:"Cobalto",        mass:"58,933",  category:"transition",     state:"Sólido",  electron:"[Ar] 3d⁷ 4s²",                    curiosity:"Confere cor azul ao vidro há séculos; usado em baterias de íon-lítio.", row:4, col:9,
+    co: { place:"santuario", reason:"O cobalto dá a cor azul característica ao vitral e ao azulejo decorativo — presentes em igrejas e santuários católicos do Brasil. A tonalidade azul celeste do Santuário Jardim da Imaculada, associada à devoção mariana, tem no cobalto sua origem química.", tags:["Azul mariano", "Vitral e azulejo", "Iconografia religiosa"] } },
+  { number:28, symbol:"Ni", name:"Níquel",         mass:"58,693",  category:"transition",     state:"Sólido",  electron:"[Ar] 3d⁸ 4s²",                    curiosity:"Resistente à corrosão; a maioria dos meteoritos contém liga ferro-níquel.", row:4, col:10, co: null },
+  { number:29, symbol:"Cu", name:"Cobre",          mass:"63,546",  category:"transition",     state:"Sólido",  electron:"[Ar] 3d¹⁰ 4s¹",                  curiosity:"Um dos primeiros metais usados pelo ser humano; excelente condutor elétrico.", row:4, col:11,
+    co: { place:"quilombo", reason:"O cobre é um dos metais mais trabalhados artesanalmente pela humanidade há mais de 10.000 anos. O Quilombo Mesquita tem mais de 200 anos de artesanato vivo: caixinhas, tapetes, biscoitos. O cobre também desenvolve pátina com o tempo — uma camada protetora que o fortalece, como uma comunidade que transforma o sofrimento em cultura.", tags:["Artesanato ancestral", "200 anos de resistência", "Pátina do tempo"] } },
+  { number:30, symbol:"Zn", name:"Zinco",          mass:"65,38",   category:"transition",     state:"Sólido",  electron:"[Ar] 3d¹⁰ 4s²",                  curiosity:"Protege o aço da corrosão (galvanização) e é essencial ao sistema imune.", row:4, col:12,
+    co: { place:"feira", reason:"O zinco é o elemento da proteção e da troca: reveste o aço contra a ferrugem e fortalece o sistema imunológico. A Feira de Sábado funciona exatamente assim — a camada protetora da economia local, onde pequenos produtores têm seu espaço e onde alimentos frescos chegam diretamente de quem produz.", tags:["Economia local", "Proteção do produtor", "Troca direta"] } },
+  { number:31, symbol:"Ga", name:"Gálio",          mass:"69,723",  category:"post-transition",state:"Sólido",  electron:"[Ar] 3d¹⁰ 4s² 4p¹",              curiosity:"Derrete a 29,8°C — funde na palma da mão; usado em semicondutores e LEDs.", row:4, col:13,
+    co: { place:"orla", reason:"O gálio é usado em LEDs de alta eficiência — a iluminação moderna das orlas e parques urbanos. A Orla do Lago Jacob é bem iluminada com segurança da Guarda Municipal; a luz que torna a orla segura e acolhedora à noite tem no gálio uma de suas bases tecnológicas.", tags:["Iluminação LED", "Orla à noite", "Segurança urbana"] } },
+  { number:32, symbol:"Ge", name:"Germânio",       mass:"72,63",   category:"metalloid",      state:"Sólido",  electron:"[Ar] 3d¹⁰ 4s² 4p²",              curiosity:"Previsto por Mendeleev antes de ser descoberto; usado em fibras ópticas.", row:4, col:14, co: null },
+  { number:33, symbol:"As", name:"Arsênio",        mass:"74,922",  category:"metalloid",      state:"Sólido",  electron:"[Ar] 3d¹⁰ 4s² 4p³",              curiosity:"Venenoso e historicamente usado como veneno; hoje tem aplicações em semicondutores.", row:4, col:15, co: null },
+  { number:34, symbol:"Se", name:"Selênio",        mass:"78,971",  category:"nonmetal",       state:"Sólido",  electron:"[Ar] 3d¹⁰ 4s² 4p⁴",              curiosity:"Essencial em traços para humanos; confere propriedades fotocondutoras a células solares.", row:4, col:16, co: null },
+  { number:35, symbol:"Br", name:"Bromo",          mass:"79,904",  category:"halogen",        state:"Líquido", electron:"[Ar] 3d¹⁰ 4s² 4p⁵",              curiosity:"Um dos apenas dois elementos líquidos à temperatura ambiente (junto com o mercúrio).", row:4, col:17,
+    co: { place:"lago", reason:"O bromo é amplamente usado no tratamento de piscinas e reservatórios de água como bactericida alternativo ao cloro. A manutenção da qualidade das águas do Lago Jacob — que abasteceu gerações de ocidentalenses — envolve compostos bromados que impedem a proliferação de algas e bactérias.", tags:["Tratamento de água", "Bactericida", "Qualidade do lago"] } },
+  { number:36, symbol:"Kr", name:"Criptônio",      mass:"83,798",  category:"noble",          state:"Gás",     electron:"[Ar] 3d¹⁰ 4s² 4p⁶",              curiosity:"Usado em alguns lasers e em lâmpadas de alta intensidade.", row:4, col:18, co: null },
+  { number:37, symbol:"Rb", name:"Rubídio",        mass:"85,468",  category:"alkali",         state:"Sólido",  electron:"[Kr] 5s¹",                        curiosity:"Inflama espontaneamente ao contato com o ar; usado em relógios atômicos.", row:5, col:1, co: null },
+  { number:38, symbol:"Sr", name:"Estrôncio",      mass:"87,62",   category:"alkaline",       state:"Sólido",  electron:"[Kr] 5s²",                        curiosity:"Cria a cor vermelha nos fogos de artifício; o Sr-90 radioativo é produto da fissão nuclear.", row:5, col:2,
+    co: { place:"carnaval", reason:"O estrôncio é responsável pela cor vermelha vibrante dos fogos de artifício — o arremate visual das grandes celebrações. Nas festas populares de Cidade Ocidental, incluindo o Carnaval e o Aniversário da cidade em dezembro, os fogos de estrôncio iluminam o céu do Cerrado.", tags:["Fogos de artifício", "Cor vermelha", "Festas populares"] } },
+  { number:39, symbol:"Y",  name:"Ítrio",          mass:"88,906",  category:"transition",     state:"Sólido",  electron:"[Kr] 4d¹ 5s²",                    curiosity:"Usado em supercondutores de alta temperatura e na produção de LEDs brancos.", row:5, col:3, co: null },
+  { number:40, symbol:"Zr", name:"Zircônio",       mass:"91,224",  category:"transition",     state:"Sólido",  electron:"[Kr] 4d² 5s²",                    curiosity:"Extremamente resistente à corrosão; o óxido de zircônio é o 'diamante falso' (zircônia).", row:5, col:4, co: null },
+  { number:41, symbol:"Nb", name:"Nióbio",         mass:"92,906",  category:"transition",     state:"Sólido",  electron:"[Kr] 4d⁴ 5s¹",                    curiosity:"O Brasil detém a maior reserva mundial; essencial para aço de alta resistência.", row:5, col:5,
+    co: { place:"memorial", reason:"O Brasil possui 98% das reservas mundiais de nióbio — e Goiás está no coração desta riqueza nacional. O Memorial Cidade Ocidental guarda a memória de uma cidade que se desenvolveu no mesmo Planalto Central onde este tesouro mineral estratégico está presente, conectando a identidade local ao patrimônio mineral brasileiro.", tags:["Riqueza mineral goiana", "Identidade nacional", "Planalto Central"] } },
+  { number:42, symbol:"Mo", name:"Molibdênio",     mass:"95,95",   category:"transition",     state:"Sólido",  electron:"[Kr] 4d⁵ 5s¹",                    curiosity:"Tem o quarto maior ponto de fusão entre os elementos; fortalece aços especiais.", row:5, col:6, co: null },
+  { number:43, symbol:"Tc", name:"Tecnécio",       mass:"(98)",    category:"transition",     state:"Sólido",  electron:"[Kr] 4d⁵ 5s²",                    curiosity:"O primeiro elemento produzido artificialmente; usado em diagnóstico médico nuclear.", row:5, col:7, co: null },
+  { number:44, symbol:"Ru", name:"Rutênio",        mass:"101,07",  category:"transition",     state:"Sólido",  electron:"[Kr] 4d⁷ 5s¹",                    curiosity:"Metal do grupo da platina; endurece ligas de platina e paládio.", row:5, col:8, co: null },
+  { number:45, symbol:"Rh", name:"Ródio",          mass:"102,906", category:"transition",     state:"Sólido",  electron:"[Kr] 4d⁸ 5s¹",                    curiosity:"Um dos metais mais raros e caros; essencial nos catalisadores dos carros.", row:5, col:9, co: null },
+  { number:46, symbol:"Pd", name:"Paládio",        mass:"106,42",  category:"transition",     state:"Sólido",  electron:"[Kr] 4d¹⁰",                       curiosity:"Absorve até 900 vezes seu volume em hidrogênio; usado em catalisadores e joias.", row:5, col:10, co: null },
+  { number:47, symbol:"Ag", name:"Prata",          mass:"107,868", category:"transition",     state:"Sólido",  electron:"[Kr] 4d¹⁰ 5s¹",                  curiosity:"Melhor condutor elétrico e térmico de todos os metais; tem propriedades antimicrobianas.", row:5, col:11,
+    co: { place:"santuario", reason:"A prata é o material por excelência do sagrado: cálices, crucifixos, rosários e ornamentos religiosos são tradicionalmente prateados. Sua luminosidade branca evoca pureza e devoção mariana — a Imaculada Conceição é representada com manto branco e adornos prateados. A prata tem ainda o maior poder de reflexão de luz entre todos os metais.", tags:["Devoção mariana", "Iconografia sagrada", "Reflexão da luz"] } },
+  { number:48, symbol:"Cd", name:"Cádmio",         mass:"112,414", category:"transition",     state:"Sólido",  electron:"[Kr] 4d¹⁰ 5s²",                  curiosity:"Altamente tóxico; acumulou-se em solos japoneses causando a doença itai-itai.", row:5, col:12, co: null },
+  { number:49, symbol:"In", name:"Índio",          mass:"114,818", category:"post-transition",state:"Sólido",  electron:"[Kr] 4d¹⁰ 5s² 5p¹",              curiosity:"Emite um som característico de 'grito' ao ser dobrado; usado em telas sensíveis ao toque.", row:5, col:13, co: null },
+  { number:50, symbol:"Sn", name:"Estanho",        mass:"118,71",  category:"post-transition",state:"Sólido",  electron:"[Kr] 4d¹⁰ 5s² 5p²",              curiosity:"A 'praga do estanho': abaixo de 13°C converte-se em pó amorfo (estanho cinza).", row:5, col:14, co: null },
+  { number:51, symbol:"Sb", name:"Antimônio",      mass:"121,76",  category:"metalloid",      state:"Sólido",  electron:"[Kr] 4d¹⁰ 5s² 5p³",              curiosity:"Usado no Egito Antigo como cosmético (kohl); hoje é retardante de chama.", row:5, col:15, co: null },
+  { number:52, symbol:"Te", name:"Telúrio",        mass:"127,6",   category:"metalloid",      state:"Sólido",  electron:"[Kr] 4d¹⁰ 5s² 5p⁴",              curiosity:"Um dos elementos mais raros na crosta terrestre; impõe mau cheiro intenso.", row:5, col:16, co: null },
+  { number:53, symbol:"I",  name:"Iodo",           mass:"126,904", category:"halogen",        state:"Sólido",  electron:"[Kr] 4d¹⁰ 5s² 5p⁵",              curiosity:"Essencial para a tireoide; sublima diretamente de sólido a vapor violeta.", row:5, col:17,
+    co: { place:"quilombo", reason:"O iodo era usado desde o século XIX para conservar e esterilizar ferimentos — conhecimento de cura que comunidades quilombolas preservavam em suas práticas medicinais tradicionais. O Quilombo Mesquita, com 200 anos de sabedoria ancestral, guarda práticas de cura com plantas e minerais que a ciência moderna passou a reconhecer.", tags:["Medicina tradicional", "Sabedoria ancestral", "Cura quilombola"] } },
+  { number:54, symbol:"Xe", name:"Xenônio",        mass:"131,293", category:"noble",          state:"Gás",     electron:"[Kr] 4d¹⁰ 5s² 5p⁶",              curiosity:"Usado em lâmpadas de flash e propulsores iônicos de satélites.", row:5, col:18, co: null },
+  { number:55, symbol:"Cs", name:"Césio",          mass:"132,905", category:"alkali",         state:"Sólido",  electron:"[Xe] 6s¹",                        curiosity:"Define o segundo (unidade de tempo) por sua frequência de ressonância atômica.", row:6, col:1,
+    co: { place:"memorial", reason:"O césio define o segundo com precisão absoluta nos relógios atômicos. O Memorial Cidade Ocidental é exatamente isso: um marcador do tempo preciso, que registra cada momento da história política e social do município para que o passado nunca se perca.", tags:["Registro preciso do tempo", "Memória histórica", "Precisão"] } },
+  { number:56, symbol:"Ba", name:"Bário",          mass:"137,327", category:"alkaline",       state:"Sólido",  electron:"[Xe] 6s²",                        curiosity:"O sulfato de bário é usado como contraste em radiografias do trato gastrointestinal.", row:6, col:2, co: null },
+  { number:57, symbol:"La", name:"Lantânio",       mass:"138,905", category:"lanthanide",     state:"Sólido",  electron:"[Xe] 5d¹ 6s²",                   curiosity:"Dá nome à série dos lantanídeos; usado em catalisadores de refinaria de petróleo.", row:6, col:3, co: null },
+  { number:72, symbol:"Hf", name:"Háfnio",         mass:"178,49",  category:"transition",     state:"Sólido",  electron:"[Xe] 4f¹⁴ 5d² 6s²",              curiosity:"Absorve nêutrons eficientemente; usado em barras de controle de reatores nucleares.", row:6, col:4, co: null },
+  { number:73, symbol:"Ta", name:"Tântalo",        mass:"180,948", category:"transition",     state:"Sólido",  electron:"[Xe] 4f¹⁴ 5d³ 6s²",              curiosity:"Biocompatível e resistente à corrosão; usado em capacitores de eletrônicos.", row:6, col:5, co: null },
+  { number:74, symbol:"W",  name:"Tungstênio",     mass:"183,84",  category:"transition",     state:"Sólido",  electron:"[Xe] 4f¹⁴ 5d⁴ 6s²",              curiosity:"O elemento com maior ponto de fusão (3422°C); filamento das lâmpadas incandescentes.", row:6, col:6,
+    co: { place:"orla", reason:"O tungstênio, com ponto de fusão mais alto de todos os metais, era usado nos filamentos das lâmpadas incandescentes que iluminaram as primeiras orlas e praças públicas do Brasil. A luz pública que tornava segura a vida noturna nas cidades do entorno de Brasília passou pelo tungstênio antes do LED.", tags:["Iluminação pública", "Lâmpadas históricas", "Vida urbana noturna"] } },
+  { number:75, symbol:"Re", name:"Rênio",          mass:"186,207", category:"transition",     state:"Sólido",  electron:"[Xe] 4f¹⁴ 5d⁵ 6s²",              curiosity:"Um dos metais mais densos e de maior ponto de fusão; usado em turbinas a jato.", row:6, col:7, co: null },
+  { number:76, symbol:"Os", name:"Ósmio",          mass:"190,23",  category:"transition",     state:"Sólido",  electron:"[Xe] 4f¹⁴ 5d⁶ 6s²",              curiosity:"O elemento de maior densidade natural (22,59 g/cm³) — mais denso que o chumbo.", row:6, col:8, co: null },
+  { number:77, symbol:"Ir", name:"Irídio",         mass:"192,217", category:"transition",     state:"Sólido",  electron:"[Xe] 4f¹⁴ 5d⁷ 6s²",              curiosity:"Anomalia de irídio na fronteira K-Pg evidencia o impacto de asteroide que extinguiu dinossauros.", row:6, col:9, co: null },
+  { number:78, symbol:"Pt", name:"Platina",        mass:"195,084", category:"transition",     state:"Sólido",  electron:"[Xe] 4f¹⁴ 5d⁹ 6s¹",              curiosity:"Catalisadora do conversor catalítico; sua raridade a torna mais valiosa que o ouro.", row:6, col:10, co: null },
+  { number:79, symbol:"Au", name:"Ouro",           mass:"196,967", category:"transition",     state:"Sólido",  electron:"[Xe] 4f¹⁴ 5d¹⁰ 6s¹",             curiosity:"Não oxida nem corrói; 99% do ouro terrestre está no núcleo da Terra.", row:6, col:11,
+    co: { place:"memorial", reason:"O ouro não oxida, não corrói e preserva sua forma original por milênios — é o símbolo universal da memória imutável. O Memorial guarda a história de Cidade Ocidental com essa mesma permanência. A própria história goiana nasceu da corrida pelo ouro dos bandeirantes, tornando este elemento duplamente simbólico.", tags:["Memória imutável", "História goiana", "Ouro dos bandeirantes"] } },
+  { number:80, symbol:"Hg", name:"Mercúrio",       mass:"200,592", category:"transition",     state:"Líquido", electron:"[Xe] 4f¹⁴ 5d¹⁰ 6s²",             curiosity:"Único metal líquido à temperatura ambiente; muito denso — o chumbo flutua sobre ele.", row:6, col:12, co: null },
+  { number:81, symbol:"Tl", name:"Tálio",          mass:"204,38",  category:"post-transition",state:"Sólido",  electron:"[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p¹",        curiosity:"Altamente tóxico; foi chamado de 'veneno do herdeiro' por envenenadores do século XIX.", row:6, col:13, co: null },
+  { number:82, symbol:"Pb", name:"Chumbo",         mass:"207,2",   category:"post-transition",state:"Sólido",  electron:"[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p²",        curiosity:"Bloqueia radiação ionizante; seu uso como aditivo na gasolina causou intoxicação em massa.", row:6, col:14, co: null },
+  { number:83, symbol:"Bi", name:"Bismuto",        mass:"208,980", category:"post-transition",state:"Sólido",  electron:"[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p³",        curiosity:"Forma cristais coloridos multicoloridos; diamagnético, é repelido por campos magnéticos.", row:6, col:15, co: null },
+  { number:84, symbol:"Po", name:"Polônio",        mass:"(209)",   category:"metalloid",      state:"Sólido",  electron:"[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁴",        curiosity:"Descoberto por Marie Curie, batizado em homenagem à Polônia; extremamente radioativo.", row:6, col:16, co: null },
+  { number:85, symbol:"At", name:"Astato",         mass:"(210)",   category:"halogen",        state:"Sólido",  electron:"[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁵",        curiosity:"O elemento natural mais raro na Terra; toda a quantidade na crosta é menor que 1 grama.", row:6, col:17, co: null },
+  { number:86, symbol:"Rn", name:"Radônio",        mass:"(222)",   category:"noble",          state:"Gás",     electron:"[Xe] 4f¹⁴ 5d¹⁰ 6s² 6p⁶",        curiosity:"Gás radioativo que emana do solo; segunda causa de câncer de pulmão nos EUA.", row:6, col:18, co: null },
+  { number:87, symbol:"Fr", name:"Frâncio",        mass:"(223)",   category:"alkali",         state:"Sólido",  electron:"[Rn] 7s¹",                        curiosity:"O elemento natural mais instável; todo o frâncio existente na Terra cabe em poucos gramas.", row:7, col:1, co: null },
+  { number:88, symbol:"Ra", name:"Rádio",          mass:"(226)",   category:"alkaline",       state:"Sólido",  electron:"[Rn] 7s²",                        curiosity:"Descoberto por Marie Curie; brilha fracamente no escuro devido à ionização do ar.", row:7, col:2, co: null },
+  { number:89, symbol:"Ac", name:"Actínio",        mass:"(227)",   category:"actinide",       state:"Sólido",  electron:"[Rn] 6d¹ 7s²",                   curiosity:"Brilha azul no escuro; dá nome à série dos actinídeos e tem usos em terapia de câncer.", row:7, col:3, co: null },
+  { number:104,symbol:"Rf", name:"Rutherfórdio",   mass:"(267)",   category:"transition",     state:"Sólido",  electron:"[Rn] 5f¹⁴ 6d² 7s²",              curiosity:"Homenagem a Ernest Rutherford; sintetizado apenas em aceleradores de partículas.", row:7, col:4, co: null },
+  { number:105,symbol:"Db", name:"Dúbnio",         mass:"(268)",   category:"transition",     state:"Sólido",  electron:"[Rn] 5f¹⁴ 6d³ 7s²",              curiosity:"Nomeado em homenagem a Dubna (Rússia); produzido em quantidades de apenas alguns átomos.", row:7, col:5, co: null },
+  { number:106,symbol:"Sg", name:"Seabórgio",      mass:"(271)",   category:"transition",     state:"Sólido",  electron:"[Rn] 5f¹⁴ 6d⁴ 7s²",              curiosity:"Único elemento nomeado em vida pelo homenageado, Glenn T. Seaborg.", row:7, col:6, co: null },
+  { number:107,symbol:"Bh", name:"Bóhrio",         mass:"(272)",   category:"transition",     state:"Sólido",  electron:"[Rn] 5f¹⁴ 6d⁵ 7s²",              curiosity:"Nomeado em homenagem ao físico Niels Bohr; meia-vida de apenas 17 segundos.", row:7, col:7, co: null },
+  { number:108,symbol:"Hs", name:"Hássio",         mass:"(270)",   category:"transition",     state:"Sólido",  electron:"[Rn] 5f¹⁴ 6d⁶ 7s²",              curiosity:"Nomeado pelo estado alemão de Hessen; o isótopo mais estável dura menos de 1 segundo.", row:7, col:8, co: null },
+  { number:109,symbol:"Mt", name:"Meitnerio",      mass:"(278)",   category:"transition",     state:"Sólido",  electron:"[Rn] 5f¹⁴ 6d⁷ 7s²",              curiosity:"Homenagem a Lise Meitner, física que explicou a fissão nuclear.", row:7, col:9, co: null },
+  { number:110,symbol:"Ds", name:"Darmstádtio",    mass:"(281)",   category:"transition",     state:"Sólido",  electron:"[Rn] 5f¹⁴ 6d⁸ 7s²",              curiosity:"Criado no GSI de Darmstadt, Alemanha; existe por frações de segundo.", row:7, col:10, co: null },
+  { number:111,symbol:"Rg", name:"Roentgênio",     mass:"(282)",   category:"transition",     state:"Sólido",  electron:"[Rn] 5f¹⁴ 6d¹⁰ 7s¹",             curiosity:"Nomeado em homenagem a Wilhelm Röntgen, descobridor dos raios-X.", row:7, col:11, co: null },
+  { number:112,symbol:"Cn", name:"Copernício",     mass:"(285)",   category:"transition",     state:"Gás",     electron:"[Rn] 5f¹⁴ 6d¹⁰ 7s²",             curiosity:"Pode ser um gás à temperatura ambiente; homenagem a Nicolau Copérnico.", row:7, col:12, co: null },
+  { number:113,symbol:"Nh", name:"Nihônio",        mass:"(286)",   category:"post-transition",state:"Sólido",  electron:"[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p¹",        curiosity:"Primeiro elemento descoberto na Ásia (Japão); 'Nihon' significa Japão em japonês.", row:7, col:13, co: null },
+  { number:114,symbol:"Fl", name:"Fleróvio",       mass:"(289)",   category:"post-transition",state:"Gás",     electron:"[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p²",        curiosity:"Comporta-se quimicamente como um gás nobre; homenagem ao físico Georgy Flerov.", row:7, col:14, co: null },
+  { number:115,symbol:"Mc", name:"Moscóvio",       mass:"(290)",   category:"post-transition",state:"Sólido",  electron:"[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p³",        curiosity:"Nomeado em homenagem à Oblast de Moscou, onde fica o JINR.", row:7, col:15, co: null },
+  { number:116,symbol:"Lv", name:"Livermório",     mass:"(293)",   category:"post-transition",state:"Sólido",  electron:"[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p⁴",        curiosity:"Homenagem ao Laboratório Nacional Lawrence Livermore, nos EUA.", row:7, col:16, co: null },
+  { number:117,symbol:"Ts", name:"Tenesso",        mass:"(294)",   category:"halogen",        state:"Sólido",  electron:"[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p⁵",        curiosity:"Nomeado em homenagem ao estado do Tennessee, sede de laboratórios que colaboraram em sua criação.", row:7, col:17, co: null },
+  { number:118,symbol:"Og", name:"Oganessônio",    mass:"(294)",   category:"noble",          state:"Sólido",  electron:"[Rn] 5f¹⁴ 6d¹⁰ 7s² 7p⁶",        curiosity:"O elemento mais pesado conhecido; nomeado em vida pelo físico Yuri Oganessian.", row:7, col:18, co: null },
+  { number:58, symbol:"Ce", name:"Cério",          mass:"140,116", category:"lanthanide",     state:"Sólido",  electron:"[Xe] 4f¹ 5d¹ 6s²",               curiosity:"O lantanídeo mais abundante; usado em catalisadores de automóveis e telas de TV.", row:9, col:4, co: null },
+  { number:59, symbol:"Pr", name:"Praseodímio",    mass:"140,908", category:"lanthanide",     state:"Sólido",  electron:"[Xe] 4f³ 6s²",                    curiosity:"Seu óxido é usado para produzir vidros amarelos e esmaltes para cerâmica.", row:9, col:5,
+    co: { place:"feira", reason:"O praseodímio produz esmaltes amarelos e vidros coloridos usados em cerâmica artesanal. Na Feira de Sábado de Cidade Ocidental, peças de cerâmica e artesanato colorido do Quilombo Mesquita levam indiretamente a química dos lantanídeos na pigmentação de suas superfícies.", tags:["Esmalte cerâmico", "Artesanato colorido", "Feira local"] } },
+  { number:60, symbol:"Nd", name:"Neodímio",       mass:"144,242", category:"lanthanide",     state:"Sólido",  electron:"[Xe] 4f⁴ 6s²",                   curiosity:"Os ímãs de neodímio são os mais potentes fabricados atualmente.", row:9, col:6,
+    co: { place:"usina", reason:"Os geradores de usinas hidrelétricas modernas utilizam ímãs de neodímio de alta potência para converter energia mecânica em elétrica com máxima eficiência. Embora a usina do Saia Velha seja colonial, a evolução tecnológica da geração de energia passa hoje obrigatoriamente pelo neodímio.", tags:["Geradores elétricos", "Ímãs potentes", "Eficiência energética"] } },
+  { number:61, symbol:"Pm", name:"Promécio",       mass:"(145)",   category:"lanthanide",     state:"Sólido",  electron:"[Xe] 4f⁵ 6s²",                   curiosity:"O único lantanídeo sem isótopos estáveis; usado em marcapassos nucleares.", row:9, col:7, co: null },
+  { number:62, symbol:"Sm", name:"Samário",        mass:"150,36",  category:"lanthanide",     state:"Sólido",  electron:"[Xe] 4f⁶ 6s²",                   curiosity:"Os ímãs Sm-Co resistem a altas temperaturas e são usados em motores de aeronaves.", row:9, col:8, co: null },
+  { number:63, symbol:"Eu", name:"Európio",        mass:"151,964", category:"lanthanide",     state:"Sólido",  electron:"[Xe] 4f⁷ 6s²",                   curiosity:"Produz fluorescência vermelha em telas de TV; cédulas de euro têm európio anti-falsificação.", row:9, col:9,
+    co: { place:"memorial", reason:"O európio é o elemento que autentica — suas propriedades de fluorescência são usadas em cédulas de euro e documentos oficiais para impedir falsificações. O Memorial Cidade Ocidental tem essa mesma função: autenticar e certificar a história verdadeira do município contra o esquecimento.", tags:["Autenticidade", "Documentos históricos", "Preservação da verdade"] } },
+  { number:64, symbol:"Gd", name:"Gadolínio",      mass:"157,25",  category:"lanthanide",     state:"Sólido",  electron:"[Xe] 4f⁷ 5d¹ 6s²",               curiosity:"Usado como agente de contraste em ressonâncias magnéticas (MRI).", row:9, col:10, co: null },
+  { number:65, symbol:"Tb", name:"Térbio",         mass:"158,925", category:"lanthanide",     state:"Sólido",  electron:"[Xe] 4f⁹ 6s²",                   curiosity:"Produz cores verdes em telas; algumas ligas de térbio mudam de forma com campos magnéticos.", row:9, col:11, co: null },
+  { number:66, symbol:"Dy", name:"Disprósio",      mass:"162,5",   category:"lanthanide",     state:"Sólido",  electron:"[Xe] 4f¹⁰ 6s²",                  curiosity:"Essencial em ímãs de turbinas eólicas; seu nome em grego significa 'difícil de obter'.", row:9, col:12, co: null },
+  { number:67, symbol:"Ho", name:"Hólmio",         mass:"164,930", category:"lanthanide",     state:"Sólido",  electron:"[Xe] 4f¹¹ 6s²",                  curiosity:"Possui o maior momento magnético entre os elementos; usado em lasers médicos.", row:9, col:13, co: null },
+  { number:68, symbol:"Er", name:"Érbio",          mass:"167,259", category:"lanthanide",     state:"Sólido",  electron:"[Xe] 4f¹² 6s²",                  curiosity:"Dá cor rosa ao vidro; amplifica sinais em cabos de fibra óptica de longa distância.", row:9, col:14, co: null },
+  { number:69, symbol:"Tm", name:"Túlio",          mass:"168,934", category:"lanthanide",     state:"Sólido",  electron:"[Xe] 4f¹³ 6s²",                  curiosity:"O lantanídeo mais raro e caro; pode ser usado em lasers portáteis de raios-X.", row:9, col:15, co: null },
+  { number:70, symbol:"Yb", name:"Itérbio",        mass:"173,045", category:"lanthanide",     state:"Sólido",  electron:"[Xe] 4f¹⁴ 6s²",                  curiosity:"Usado em relógios atômicos de altíssima precisão; também serve como dopante de fibras ópticas.", row:9, col:16, co: null },
+  { number:71, symbol:"Lu", name:"Lutécio",        mass:"174,967", category:"lanthanide",     state:"Sólido",  electron:"[Xe] 4f¹⁴ 5d¹ 6s²",              curiosity:"O lantanídeo mais denso e de maior ponto de fusão; usado em tomografia de emissão de pósitrons.", row:9, col:17, co: null },
+  { number:90, symbol:"Th", name:"Tório",          mass:"232,038", category:"actinide",       state:"Sólido",  electron:"[Rn] 6d² 7s²",                   curiosity:"Combustível nuclear alternativo; produz 3× mais energia que o urânio no ciclo do tório.", row:10, col:4, co: null },
+  { number:91, symbol:"Pa", name:"Protactínio",    mass:"231,036", category:"actinide",       state:"Sólido",  electron:"[Rn] 5f² 6d¹ 7s²",               curiosity:"Extremamente radioativo e raro; intermediário no decaimento do urânio para actínio.", row:10, col:5, co: null },
+  { number:92, symbol:"U",  name:"Urânio",         mass:"238,029", category:"actinide",       state:"Sólido",  electron:"[Rn] 5f³ 6d¹ 7s²",               curiosity:"Combustível de usinas nucleares; o U-235 é o único isótopo fissível que ocorre naturalmente.", row:10, col:6,
+    co: { place:"usina", reason:"O urânio representa a evolução máxima da geração de energia elétrica — a usina nuclear. A Usina Hidrelétrica do Saia Velha foi pioneira na energia elétrica da região; o urânio é o próximo degrau desta mesma trajetória humana de transformar recursos naturais em energia para a civilização.", tags:["Evolução energética", "Fissão nuclear", "Energia elétrica"] } },
+  { number:93, symbol:"Np", name:"Netúnio",        mass:"(237)",   category:"actinide",       state:"Sólido",  electron:"[Rn] 5f⁴ 6d¹ 7s²",               curiosity:"Primeiro actinídeo produzido artificialmente (1940); traços são encontrados em minérios de urânio.", row:10, col:7, co: null },
+  { number:94, symbol:"Pu", name:"Plutônio",       mass:"(244)",   category:"actinide",       state:"Sólido",  electron:"[Rn] 5f⁶ 7s²",                   curiosity:"Combustível das bombas de hidrogênio e de reatores nucleares; brilha intensamente no escuro.", row:10, col:8, co: null },
+  { number:95, symbol:"Am", name:"Amerício",       mass:"(243)",   category:"actinide",       state:"Sólido",  electron:"[Rn] 5f⁷ 7s²",                   curiosity:"Encontrado em detectores de fumaça domésticos; nomeado pelas Américas.", row:10, col:9,
+    co: { place:"quilombo", reason:"O amerício está nos detectores de fumaça de cada residência — sentinela invisível que protege famílias. O Quilombo Mesquita é também uma sentinela cultural: uma comunidade que há mais de 200 anos detecta e resiste ao apagamento de sua identidade, protegendo tradições que não podem desaparecer.", tags:["Proteção familiar", "Sentinela cultural", "Resistência invisível"] } },
+  { number:96, symbol:"Cm", name:"Cúrio",          mass:"(247)",   category:"actinide",       state:"Sólido",  electron:"[Rn] 5f⁷ 6d¹ 7s²",               curiosity:"Homenagem a Marie e Pierre Curie; seu calor radioativo alimentou sondas espaciais.", row:10, col:10, co: null },
+  { number:97, symbol:"Bk", name:"Berquélio",      mass:"(247)",   category:"actinide",       state:"Sólido",  electron:"[Rn] 5f⁹ 7s²",                   curiosity:"Nomeado em homenagem a Berkeley (Califórnia), onde foi sintetizado em 1949.", row:10, col:11, co: null },
+  { number:98, symbol:"Cf", name:"Califórnio",     mass:"(251)",   category:"actinide",       state:"Sólido",  electron:"[Rn] 5f¹⁰ 7s²",                  curiosity:"Fonte intensa de nêutrons usada para iniciar reatores nucleares e diagnosticar câncer.", row:10, col:12, co: null },
+  { number:99, symbol:"Es", name:"Einstênio",      mass:"(252)",   category:"actinide",       state:"Sólido",  electron:"[Rn] 5f¹¹ 7s²",                  curiosity:"Descoberto nos detritos da primeira bomba de hidrogênio; homenagem a Albert Einstein.", row:10, col:13, co: null },
+  { number:100,symbol:"Fm", name:"Férmio",         mass:"(257)",   category:"actinide",       state:"Sólido",  electron:"[Rn] 5f¹² 7s²",                  curiosity:"Também descoberto em detritos de testes nucleares; homenagem a Enrico Fermi.", row:10, col:14, co: null },
+  { number:101,symbol:"Md", name:"Mendelévio",     mass:"(258)",   category:"actinide",       state:"Sólido",  electron:"[Rn] 5f¹³ 7s²",                  curiosity:"Homenagem a Dmitri Mendeleev, criador da tabela periódica.", row:10, col:15, co: null },
+  { number:102,symbol:"No", name:"Nobélio",        mass:"(259)",   category:"actinide",       state:"Sólido",  electron:"[Rn] 5f¹⁴ 7s²",                  curiosity:"Homenagem a Alfred Nobel; produzido em quantidades de poucos átomos.", row:10, col:16, co: null },
+  { number:103,symbol:"Lr", name:"Laurêncio",      mass:"(262)",   category:"actinide",       state:"Sólido",  electron:"[Rn] 5f¹⁴ 7s² 7p¹",              curiosity:"Homenagem a Ernest Lawrence, inventor do cíclotron; o último actinídeo.", row:10, col:17, co: null },
+];
+
+// ================================================================
+//  CATEGORIAS
+// ================================================================
+const CAT_NAMES = {
+  alkali:           "Metais Alcalinos",
+  alkaline:         "Metais Alcalino-Terrosos",
+  lanthanide:       "Lantanídeos",
+  actinide:         "Actinídeos",
+  transition:       "Metais de Transição",
+  "post-transition":"Metais Pós-Transição",
+  metalloid:        "Semimetais",
+  nonmetal:         "Não-Metais",
+  halogen:          "Halogênios",
+  noble:            "Gases Nobres",
+};
+
+const CAT_COLORS = {};
+(function(){
+  const map = { alkali:'alkali', alkaline:'alkaline', lanthanide:'lanthanide', actinide:'actinide',
+    transition:'transition', 'post-transition':'post', metalloid:'metalloid',
+    nonmetal:'nonmetal', halogen:'halogen', noble:'noble' };
+  Object.keys(CAT_NAMES).forEach(k => {
+    CAT_COLORS[k] = getComputedStyle(document.documentElement).getPropertyValue(`--c-${map[k]}`).trim();
+  });
+})();
+
+// ================================================================
+//  LEGENDA
+// ================================================================
+function buildLegend() {
+  const legend = document.getElementById('legend');
+  Object.entries(CAT_NAMES).forEach(([key, label]) => {
+    const item = document.createElement('div');
+    item.className = 'legend-item';
+    item.dataset.cat = key;
+    item.innerHTML = `<span class="legend-dot" style="background:${CAT_COLORS[key]}"></span>${label}`;
+    item.addEventListener('click', () => {
+      const sel = document.getElementById('filter');
+      sel.value = sel.value === key ? '' : key;
+      applyFilters();
+    });
+    legend.appendChild(item);
+  });
+}
+
+// ================================================================
+//  CONSTRUIR TABELA
+// ================================================================
+function buildTable() {
+  const table = document.getElementById('periodicTable');
+  const map = {};
+  ELEMENTS.forEach(el => { map[`${el.row}-${el.col}`] = el; });
+
+  for (let r = 1; r <= 7; r++) {
+    for (let c = 1; c <= 18; c++) {
+      const el = map[`${r}-${c}`];
+      if (el) {
+        table.appendChild(createElementBlock(el));
+      } else {
+        table.appendChild(document.createElement('div'));
+      }
+    }
+  }
+
+  const sep = document.createElement('div');
+  sep.className = 'separator-row';
+  table.appendChild(sep);
+
+  for (let c = 1; c <= 18; c++) {
+    const el = map[`9-${c}`];
+    if (el) {
+      table.appendChild(createElementBlock(el));
+    } else if (c === 1) {
+      const lbl = document.createElement('div');
+      lbl.className = 'lan-label';
+      lbl.style.gridColumn = '1 / 4';
+      lbl.textContent = '57–71';
+      table.appendChild(lbl);
+      c = 3;
+    } else if (c === 18) {
+      table.appendChild(document.createElement('div'));
+    }
+  }
+
+  for (let c = 1; c <= 18; c++) {
+    const el = map[`10-${c}`];
+    if (el) {
+      table.appendChild(createElementBlock(el));
+    } else if (c === 1) {
+      const lbl = document.createElement('div');
+      lbl.className = 'act-label';
+      lbl.style.gridColumn = '1 / 4';
+      lbl.textContent = '89–103';
+      table.appendChild(lbl);
+      c = 3;
+    } else if (c === 18) {
+      table.appendChild(document.createElement('div'));
+    }
+  }
+}
+
+function createElementBlock(el) {
+  const div = document.createElement('div');
+  div.className = `element ${el.category}${el.co ? ' has-co' : ''}`;
+  div.dataset.number = el.number;
+  div.dataset.symbol = el.symbol.toLowerCase();
+  div.dataset.name   = el.name.toLowerCase();
+  div.dataset.cat    = el.category;
+  div.dataset.hasCo  = el.co ? '1' : '0';
+  div.innerHTML = `
+    <span class="el-number">${el.number}</span>
+    <span class="el-symbol">${el.symbol}</span>
+    <span class="el-name">${el.name}</span>
+    <span class="el-mass">${el.mass}</span>`;
+  div.addEventListener('click', () => openModal(el));
+  return div;
+}
+
+// ================================================================
+//  MODAL
+// ================================================================
+function openModal(el) {
+  const color = CAT_COLORS[el.category];
+
+  document.getElementById('modalHeader').style.color = color;
+  document.getElementById('mSymbol').textContent    = el.symbol;
+  document.getElementById('mName').textContent      = el.name;
+  document.getElementById('mNumber').textContent    = `Elemento nº ${el.number}`;
+  document.getElementById('mAtomicNum').textContent = el.number;
+  document.getElementById('mMass').textContent      = el.mass + ' u';
+  document.getElementById('mState').textContent     = el.state;
+  document.getElementById('mElectron').textContent  = el.electron;
+
+  const cur = document.getElementById('mCuriosity');
+  cur.innerHTML = `${SVG.bulb}<span>${el.curiosity}</span>`;
+  cur.style.borderLeftColor = color;
+
+  const catSpan = document.getElementById('mCategory');
+  catSpan.innerHTML = `<span class="cat-badge" style="background:${color};color:#000">${CAT_NAMES[el.category]}</span>`;
+
+  const coContent = document.getElementById('mCoContent');
+  if (el.co) {
+    const place = PLACES[el.co.place];
+    coContent.innerHTML = `
+      <div class="co-place">${place.icon}<span>${place.name}</span></div>
+      <div class="co-desc">${el.co.reason}</div>
+      <div class="co-tags">${el.co.tags.map(t=>`<span class="co-tag">${t}</span>`).join('')}</div>`;
+  } else {
+    coContent.innerHTML = `<p class="no-co">Nenhuma conexão direta mapeada com Cidade Ocidental.</p>`;
+  }
+
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+
+document.getElementById('modalClose').addEventListener('click', closeModal);
+document.getElementById('modalOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// ================================================================
+//  FILTROS
+// ================================================================
+function applyFilters() {
+  const query  = document.getElementById('search').value.trim().toLowerCase();
+  const filter = document.getElementById('filter').value;
+  const onlyCO = document.getElementById('filterCO').checked;
+  const blocks = document.querySelectorAll('.element');
+  let visible = 0;
+
+  blocks.forEach(el => {
+    const name   = el.dataset.name   || '';
+    const symbol = el.dataset.symbol || '';
+    const cat    = el.dataset.cat    || '';
+    const hasCo  = el.dataset.hasCo  === '1';
+
+    const matchSearch = !query  || name.includes(query) || symbol.includes(query);
+    const matchCat    = !filter || cat === filter;
+    const matchCO     = !onlyCO || hasCo;
+    const show = matchSearch && matchCat && matchCO;
+
+    el.classList.toggle('dimmed', !show);
+    el.classList.toggle('highlighted', show && (!!query || !!filter || onlyCO));
+    if (show) visible++;
+  });
+
+  if (!query && !filter && !onlyCO) {
+    blocks.forEach(el => el.classList.remove('highlighted'));
+  }
+
+  document.getElementById('noResults').style.display = visible === 0 ? 'block' : 'none';
+
+  document.querySelectorAll('.legend-item').forEach(li => {
+    const active = li.dataset.cat === filter;
+    li.classList.toggle('active-filter', active);
+    li.style.borderColor = active ? CAT_COLORS[li.dataset.cat] : 'transparent';
+  });
+}
+
+document.getElementById('search').addEventListener('input', applyFilters);
+document.getElementById('filter').addEventListener('change', applyFilters);
+document.getElementById('filterCO').addEventListener('change', applyFilters);
+
+// ================================================================
+//  ABA CIDADE OCIDENTAL — construir cards por local
+// ================================================================
+function buildCoPage() {
+  const container = document.getElementById('coPlacesContainer');
+
+  const byPlace = {};
+  ELEMENTS.forEach(el => {
+    if (!el.co) return;
+    if (!byPlace[el.co.place]) byPlace[el.co.place] = [];
+    byPlace[el.co.place].push(el);
+  });
+
+  const placeOrder = ['usina','lago','orla','cachoeira','quilombo','marmelada','santuario','memorial','carnaval','feira','parque','cerrado'];
+
+  placeOrder.forEach(placeKey => {
+    const elements = byPlace[placeKey];
+    if (!elements || elements.length === 0) return;
+    const place = PLACES[placeKey];
+
+    const section = document.createElement('div');
+    section.className = 'co-place-section';
+
+    section.innerHTML = `
+      <div class="co-place-title">
+        <div class="co-place-icon">${place.icon}</div>
+        <div>
+          <h3>${place.name}</h3>
+          <p>${place.desc}</p>
+        </div>
+      </div>
+      <div class="elements-grid" id="grid-${placeKey}"></div>`;
+
+    container.appendChild(section);
+
+    const grid = section.querySelector(`#grid-${placeKey}`);
+    elements.forEach(el => {
+      const card = document.createElement('div');
+      card.className = 'co-el-card';
+      card.title = `Clique para ver ${el.name} na tabela periódica`;
+      card.innerHTML = `
+        <div class="mini-block" style="background:${CAT_COLORS[el.category]}22;border:1px solid ${CAT_COLORS[el.category]}44;">
+          <span class="mini-num" style="color:${CAT_COLORS[el.category]}99">${el.number}</span>
+          <span class="mini-sym" style="color:${CAT_COLORS[el.category]}">${el.symbol}</span>
+          <span class="mini-name" style="color:${CAT_COLORS[el.category]}bb">${el.name}</span>
+          <span class="mini-mass">${el.mass}</span>
+        </div>
+        <div>
+          <div class="card-info-name">${el.name}</div>
+          <div class="card-info-reason">${el.co.reason}</div>
+          <div class="card-tags">${el.co.tags.map(t=>`<span class="card-tag">${t}</span>`).join('')}</div>
+        </div>`;
+      card.addEventListener('click', () => openModal(el));
+      grid.appendChild(card);
+    });
+  });
+}
+
+// ================================================================
+//  TABS
+// ================================================================
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(`tab-${btn.dataset.tab}`).classList.add('active');
+  });
+});
+
+// ================================================================
+//  FLASHCARD CAROUSEL — NotebookLM Style
+// ================================================================
+(function initCarousel() {
+  const track      = document.getElementById('fcTrack');
+  const prevBtn    = document.getElementById('fcPrev');
+  const nextBtn    = document.getElementById('fcNext');
+  const dotsWrap   = document.getElementById('fcDots');
+  const counter    = document.getElementById('fcCounter');
+  const slides     = document.querySelectorAll('.fc-slide');
+  const total      = slides.length;
+  let current      = 0;
+
+  // Build dots
+  slides.forEach((_, i) => {
+    const dot = document.createElement('button');
+    dot.className = 'fc-dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', `Ir para card ${i + 1}`);
+    dot.addEventListener('click', () => goTo(i));
+    dotsWrap.appendChild(dot);
+  });
+
+  function updateUI() {
+    track.style.transform = `translateX(-${current * 100}%)`;
+    counter.textContent   = `${current + 1} / ${total}`;
+    prevBtn.disabled      = current === 0;
+    nextBtn.disabled      = current === total - 1;
+    dotsWrap.querySelectorAll('.fc-dot').forEach((d, i) => {
+      d.classList.toggle('active', i === current);
+    });
+  }
+
+  function goTo(index) {
+    // unflip current card before navigating
+    const cur = slides[current] && slides[current].querySelector('.flashcard');
+    if (cur) cur.classList.remove('flipped');
+    current = Math.max(0, Math.min(index, total - 1));
+    updateUI();
+  }
+
+  prevBtn.addEventListener('click', () => goTo(current - 1));
+  nextBtn.addEventListener('click', () => goTo(current + 1));
+
+  // keyboard navigation
+  document.addEventListener('keydown', e => {
+    const tab = document.getElementById('tab-estudos');
+    if (!tab.classList.contains('active')) return;
+    if (e.key === 'ArrowRight') goTo(current + 1);
+    if (e.key === 'ArrowLeft')  goTo(current - 1);
+  });
+
+  // Flashcard click to flip
+  slides.forEach(slide => {
+    const card = slide.querySelector('.flashcard');
+    if (!card) return;
+    card.addEventListener('click', () => card.classList.toggle('flipped'));
+    card.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        card.classList.toggle('flipped');
+      }
+    });
+  });
+
+  // Touch / swipe support
+  let startX = 0;
+  const viewport = document.querySelector('.fc-carousel-viewport');
+  viewport.addEventListener('touchstart', e => {
+    startX = e.touches[0].clientX;
+  }, { passive: true });
+  viewport.addEventListener('touchend', e => {
+    const diff = startX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 48) goTo(diff > 0 ? current + 1 : current - 1);
+  }, { passive: true });
+
+  updateUI();
+})();
+
+// ================================================================
+//  INIT
+// ================================================================
+buildLegend();
+buildTable();
+buildCoPage();
+</script>
+</body>
+</html>
